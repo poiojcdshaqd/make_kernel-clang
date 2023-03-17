@@ -7,12 +7,12 @@ on:
       KERNEL_SOURCE:
         description: 'Kernel Source'
         required: true
-        default: 'https://github.com/Havoc-OS-OnePlus-8-Series/kernel_oneplus_sm8250'
+        default: 'https://github.com/HELLBOY017/kernel_oneplus_sm8250'
         
       KERNEL_SOURCE_BRANCH:
         description: 'Branch'
         required: true
-        default: 'eleven'
+        default: 'V8'
         
       KERNEL_DEFCONFIG:
         description: 'Defconfig'
@@ -22,7 +22,7 @@ on:
       CLANG_URL:
         description: 'Clang URL'
         required: true
-        default: 'https://github.com/ZyCromerZ/Clang/releases/download/10.0.1-20220724-release/Clang-10.0.1-20220724.tar.gz'
+        default: 'https://github.com/ZyCromerZ/Clang/releases/download/14.0.6-20230213-release/Clang-14.0.6-20230213.tar.gz'
         
       USE_KERNELSU:
         description: 'Use KernelSU'
@@ -86,12 +86,8 @@ jobs:
         mv out/arch/arm64/boot/Image AnyKernel3/
         mv kernel.log AnyKernel3/
 
-    - name: 上传到transfer
-      run: |
-        curl -sL https://git.io/file-transfer | sh
-        mkdir zhlhlf
-        mv android-kernel/AnyKernel3/* zhlhlf
-        cd zhlhlf
-        zip -r zhlhlf_kernelsu.zip *       
-        ../transfer wet zhlhlf_kernelsu.zip
-        
+    - name: Upload Kernel-SU
+      uses: actions/upload-artifact@v3
+      with:
+        name: oplus-sm8250-zhlhlf-ksu-${{ steps.get_time.outputs.TIME }}
+        path: "android-kernel/AnyKernel3/*"        
