@@ -77,7 +77,7 @@ jobs:
         mv .config1 out/.config
         cat out/.config
         echo "----------------------------"        
-        make O=out CC="ccache clang" CXX="ccache clang++" ARCH=arm64 CROSS_COMPILE=$CLANG_PATH/bin/aarch64-linux-gnu- CROSS_COMPILE_ARM32=$CLANG_PATH/bin/arm-linux-gnueabi- LD=ld.lld 2>&1 | tee kernel.log               
+        make O=out -j$(nproc --all) CC="ccache clang" CXX="ccache clang++" ARCH=arm64 CROSS_COMPILE=$CLANG_PATH/bin/aarch64-linux-gnu- CROSS_COMPILE_ARM32=$CLANG_PATH/bin/arm-linux-gnueabi- LD=ld.lld 2>&1 | tee kernel.log               
         echo "----------------------"
         echo "----------------------"
         git clone --depth=1 https://github.com/zhlhlf/AnyKernel3 AnyKernel3
