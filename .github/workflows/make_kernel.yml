@@ -67,11 +67,11 @@ jobs:
         export ARCH=arm64
         export SUBARCH=arm64
         export KBUILD_COMPILER_STRING="$(clang --version | head -n 1 )"
-        export KBUILD_BUILD_HOST=GitHub-Action
+        export KBUILD_BUILD_HOST=zhlhlf_linux
         export KBUILD_BUILD_USER=zhlhlf
         make O=out CC="ccache clang" CXX="ccache clang++" ARCH=arm64 CROSS_COMPILE=$CLANG_PATH/bin/aarch64-linux-gnu- CROSS_COMPILE_ARM32=$CLANG_PATH/bin/arm-linux-gnueabi- LD=ld.lld ${{ github.event.inputs.KERNEL_DEFCONFIG }}
         echo "----------------------------"
-        sed s/CONFIG_LOCALVERSION=".*"/'CONFIG_LOCALVERSION="-perf-zhlhlf"'/g out/.config >>.config1
+        sed s/CONFIG_LOCALVERSION=".*"/'CONFIG_LOCALVERSION="-perf-ksu-zhlhlf"'/g out/.config >>.config1
         rm -rf out/.config
         echo -e "CONFIG_KPROBES=y\nCONFIG_HAVE_KPROBES=y\nCONFIG_KPROBE_EVENTS=y" >>.config1
         mv .config1 out/.config
