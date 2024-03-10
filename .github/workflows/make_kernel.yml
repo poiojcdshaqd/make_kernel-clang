@@ -22,13 +22,12 @@ on:
       CLANG_URL:
         description: 'Clang URL'
         required: true
-        default: 'https://github.com/ZyCromerZ/Clang/releases/download/14.0.6-20230213-release/Clang-14.0.6-20230213.tar.gz'      
+        default: 'https://github.com/ZyCromerZ/Clang/releases/download/17.0.0-20230725-release/Clang-17.0.0-20230725.tar.gz'      
         
       ksu_path_or_KPROBES:
-        description: 'ksu-- 0 is path || 1 is KPROBES'
+        description: 'ksu-- 0 is path , 1 is KPROBES , 空 is no su'
         required: false
-        default: 'false'
-        type: int
+        default: '1'
 
 jobs:
   build:
@@ -86,7 +85,7 @@ jobs:
         cp -r kernel-\$1-$(TZ=Asia/Shanghai date "+%Y%m%d%H%M").zip ../../666
         end
         sh AnyKernel3.sh 
-        
+        if [ ${{ github.event.inputs.ksu_path_or_KPROBES }} ];then 
         echo -e "\n\n\n\n"
         echo "--------------加入ksu编译-----------------"
         rm -rf KernelSU
@@ -107,10 +106,8 @@ jobs:
         CONFIG_DM_VERITY=y
         CONFIG_DM_VERITY_AVB=y
         "
-        if [ ${{ github.event.inputs.ksu_path_or_KPROBES }} ];then \
           if [ ${{ github.event.inputs.ksu_path_or_KPROBES }} = '0' ];then git apply ../KernelSU.patch ; echo "path----------" ; fi 
           if [ ${{ github.event.inputs.ksu_path_or_KPROBES }} = '1' ];then for i in $hh; do echo $i >> .config1; done; echo "kprobes----------" ; fi 
-        fi
         mv .config1 out/.config
         echo "----------------------------"
         cat out/.config | grep KPROBES
@@ -119,6 +116,7 @@ jobs:
         make O=out -j$(nproc --all) CC="ccache clang" CXX="ccache clang++" ARCH=arm64 CROSS_COMPILE=$CLANG_PATH/bin/aarch64-linux-gnu- CROSS_COMPILE_ARM32=$CLANG_PATH/bin/arm-linux-gnueabi- LD=ld.lld 2>&1 | tee kernel.log               
         echo "----------------------"
         sh AnyKernel3.sh "KernelSU"
+        fi
 
     - name: 上传到onedrive
       run: |
