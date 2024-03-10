@@ -25,7 +25,7 @@ on:
         default: 'https://github.com/ZyCromerZ/Clang/releases/download/17.0.0-20230725-release/Clang-17.0.0-20230725.tar.gz'      
         
       ksu_path_or_KPROBES:
-        description: 'ksu-- 0 is path , 1 is KPROBES , 空 is no su'
+        description: '[0，1，2，3,  4]->[path-su,kprobes-su,only-path-su,only-kprobes-su,no-su]'
         required: false
         default: '1'
 
@@ -63,15 +63,8 @@ jobs:
         export SUBARCH=arm64
         export KBUILD_COMPILER_STRING="$(clang --version | head -n 1 )"
         export KBUILD_BUILD_HOST=zhlhlf_linux
-        export KBUILD_BUILD_USER=zhlhlf
-
-        make O=out -j$(nproc --all) CC="ccache clang" CXX="ccache clang++" ARCH=arm64 CROSS_COMPILE=$CLANG_PATH/bin/aarch64-linux-gnu- CROSS_COMPILE_ARM32=$CLANG_PATH/bin/arm-linux-gnueabi- LD=ld.lld ${{ github.event.inputs.KERNEL_DEFCONFIG }}
-        echo "----------------------------"
-        sed s/CONFIG_LOCALVERSION=".*"/'CONFIG_LOCALVERSION="-perf-ksu-zhlhlf"'/g out/.config >>.config1
-        rm -rf out/.config
-        mv .config1 out/.config
-        make O=out -j$(nproc --all) CC="ccache clang" CXX="ccache clang++" ARCH=arm64 CROSS_COMPILE=$CLANG_PATH/bin/aarch64-linux-gnu- CROSS_COMPILE_ARM32=$CLANG_PATH/bin/arm-linux-gnueabi- LD=ld.lld || exit 2>&1 | tee kernel.log
-
+        export KBUILD_BUILD_USER=zhlhlf  
+        
         cat > AnyKernel3.sh <<end
         rm -rf AnyKernel3
         git clone --depth=1 https://github.com/zhlhlf/AnyKernel3 AnyKernel3
@@ -84,8 +77,18 @@ jobs:
         mkdir ../../666 || echo ""
         cp -r kernel-\$1-$(TZ=Asia/Shanghai date "+%Y%m%d%H%M").zip ../../666
         end
+        
+        if [ ${{ github.event.inputs.ksu_path_or_KPROBES }} == "0" ] || [ ${{ github.event.inputs.ksu_path_or_KPROBES }} == "1" ] || [ ${{ github.event.inputs.ksu_path_or_KPROBES }} == "4" ];then
+        make O=out -j$(nproc --all) CC="ccache clang" CXX="ccache clang++" ARCH=arm64 CROSS_COMPILE=$CLANG_PATH/bin/aarch64-linux-gnu- CROSS_COMPILE_ARM32=$CLANG_PATH/bin/arm-linux-gnueabi- LD=ld.lld ${{ github.event.inputs.KERNEL_DEFCONFIG }}
+        echo "----------------------------"
+        sed s/CONFIG_LOCALVERSION=".*"/'CONFIG_LOCALVERSION="-perf-ksu-zhlhlf"'/g out/.config >>.config1
+        rm -rf out/.config
+        mv .config1 out/.config
+        make O=out -j$(nproc --all) CC="ccache clang" CXX="ccache clang++" ARCH=arm64 CROSS_COMPILE=$CLANG_PATH/bin/aarch64-linux-gnu- CROSS_COMPILE_ARM32=$CLANG_PATH/bin/arm-linux-gnueabi- LD=ld.lld || exit 2>&1 | tee kernel.log
+        fi
+
         sh AnyKernel3.sh 
-        if [ ${{ github.event.inputs.ksu_path_or_KPROBES }} ];then 
+        if [ ${{ github.event.inputs.ksu_path_or_KPROBES }} == "0" ] || [ ${{ github.event.inputs.ksu_path_or_KPROBES }} == "1" ] || [ ${{ github.event.inputs.ksu_path_or_KPROBES }} == "2" ] || [ ${{ github.event.inputs.ksu_path_or_KPROBES }} == "3" ];then
         echo -e "\n\n\n\n"
         echo "--------------加入ksu编译-----------------"
         rm -rf KernelSU
@@ -106,8 +109,8 @@ jobs:
         CONFIG_DM_VERITY=y
         CONFIG_DM_VERITY_AVB=y
         "
-          if [ ${{ github.event.inputs.ksu_path_or_KPROBES }} = '0' ];then git apply ../KernelSU.patch ; echo "path----------" ; fi 
-          if [ ${{ github.event.inputs.ksu_path_or_KPROBES }} = '1' ];then for i in $hh; do echo $i >> .config1; done; echo "kprobes----------" ; fi 
+        if [ ${{ github.event.inputs.ksu_path_or_KPROBES }} = '0' ] || [ ${{ github.event.inputs.ksu_path_or_KPROBES }} = '2' ];then git apply ../KernelSU.patch ; echo "path----------" ; fi 
+        if [ ${{ github.event.inputs.ksu_path_or_KPROBES }} = '1' ] || [ ${{ github.event.inputs.ksu_path_or_KPROBES }} = '3' ];then for i in $hh; do echo $i >> .config1; done; echo "kprobes----------" ; fi 
         mv .config1 out/.config
         echo "----------------------------"
         cat out/.config | grep KPROBES
