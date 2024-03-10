@@ -25,8 +25,8 @@ on:
         default: 'https://github.com/ZyCromerZ/Clang/releases/download/14.0.6-20230213-release/Clang-14.0.6-20230213.tar.gz'      
         
       ksu_path_or_KPROBES:
-        description: 'ksu--  true is path || false is KPROBES'
-        required: true
+        description: 'ksu-- 0 is path || 1 is KPROBES'
+        required: false
         default: 'false'
         type: boolean
 
@@ -107,8 +107,10 @@ jobs:
         CONFIG_DM_VERITY=y
         CONFIG_DM_VERITY_AVB=y
         "
-        if [ ${{ github.event.inputs.ksu_path_or_KPROBES }} = true ];then git apply ../KernelSU.patch ; echo "path----------" ; fi 
-        if [ ${{ github.event.inputs.ksu_path_or_KPROBES }} = false ];then for i in $hh; do echo $i >> .config1; done; echo "kprobes----------" ; fi 
+        if [ ${{ github.event.inputs.ksu_path_or_KPROBES }} ];then \
+          if [ ${{ github.event.inputs.ksu_path_or_KPROBES }} = '0' ];then git apply ../KernelSU.patch ; echo "path----------" ; fi 
+          if [ ${{ github.event.inputs.ksu_path_or_KPROBES }} = '1' ];then for i in $hh; do echo $i >> .config1; done; echo "kprobes----------" ; fi 
+        fi
         mv .config1 out/.config
         echo "----------------------------"
         cat out/.config | grep KPROBES
