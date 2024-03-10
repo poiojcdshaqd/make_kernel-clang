@@ -28,7 +28,7 @@ on:
         description: 'ksu-- 0 is path || 1 is KPROBES'
         required: false
         default: 'false'
-        type: boolean
+        type: int
 
 jobs:
   build:
