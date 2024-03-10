@@ -7,12 +7,12 @@ on:
       KERNEL_SOURCE:
         description: 'Kernel Source'
         required: true
-        default: 'https://github.com/libxzr/android_kernel_oneplus_sm8250'
+        default: 'https://github.com/HELLBOY017/kernel_oneplus_sm8250'
         
       KERNEL_SOURCE_BRANCH:
         description: 'Branch'
         required: true
-        default: 'oos11/final'
+        default: '14'
         
       KERNEL_DEFCONFIG:
         description: 'Defconfig'
