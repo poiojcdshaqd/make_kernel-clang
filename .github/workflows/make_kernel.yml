@@ -89,6 +89,7 @@ jobs:
         
         echo -e "\n\n\n\n"
         echo "--------------加入ksu编译-----------------"
+        rm -rf KernelSU
         make O=out CC="ccache clang" CXX="ccache clang++" ARCH=arm64 CROSS_COMPILE=$CLANG_PATH/bin/aarch64-linux-gnu- CROSS_COMPILE_ARM32=$CLANG_PATH/bin/arm-linux-gnueabi- LD=ld.lld ${{ github.event.inputs.KERNEL_DEFCONFIG }}
         echo "----------------------------"
         sed s/CONFIG_LOCALVERSION=".*"/'CONFIG_LOCALVERSION="-perf-ksu-zhlhlf"'/g out/.config >>.config1
