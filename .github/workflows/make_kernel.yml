@@ -17,7 +17,7 @@ on:
       KERNEL_DEFCONFIG:
         description: 'Defconfig'
         required: true
-        default: 'vendor/kona-perf_defconfig'
+        default: 'vendor/meteoric_defconfig'
 
       CLANG_URL:
         description: 'Clang URL'
