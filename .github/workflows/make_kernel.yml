@@ -85,9 +85,9 @@ jobs:
         rm -rf out/.config
         mv .config1 out/.config
         make O=out -j$(nproc --all) CC="ccache clang" CXX="ccache clang++" ARCH=arm64 CROSS_COMPILE=$CLANG_PATH/bin/aarch64-linux-gnu- CROSS_COMPILE_ARM32=$CLANG_PATH/bin/arm-linux-gnueabi- LD=ld.lld || exit 2>&1 | tee kernel.log
+        sh AnyKernel3.sh 
         fi
 
-        sh AnyKernel3.sh 
         if [ ${{ github.event.inputs.ksu_path_or_KPROBES }} == "0" ] || [ ${{ github.event.inputs.ksu_path_or_KPROBES }} == "1" ] || [ ${{ github.event.inputs.ksu_path_or_KPROBES }} == "2" ] || [ ${{ github.event.inputs.ksu_path_or_KPROBES }} == "3" ];then
         echo -e "\n\n\n\n"
         echo "--------------加入ksu编译-----------------"
