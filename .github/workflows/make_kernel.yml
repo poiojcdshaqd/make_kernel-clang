@@ -50,6 +50,7 @@ jobs:
         tar -C clang/ -zxf clang.tar.gz
         git clone --depth=1 ${{ github.event.inputs.KERNEL_SOURCE }} -b ${{ github.event.inputs.KERNEL_SOURCE_BRANCH }} android-kernel
         cd android-kernel
+        sed -i s/'git@github.com:tiann/KernelSU.git'/'https://github.com/tiann/KernelSU'/g .gitmodules
         git submodule init
         git submodule update
     
