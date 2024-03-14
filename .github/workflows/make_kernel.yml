@@ -12,12 +12,12 @@ on:
       KERNEL_SOURCE_BRANCH:
         description: 'Branch'
         required: true
-        default: '14'
+        default: 'V12'
         
       KERNEL_DEFCONFIG:
         description: 'Defconfig'
         required: true
-        default: 'vendor/meteoric_defconfig'
+        default: 'vendor/kona-perf_defconfig'
 
       CLANG_URL:
         description: 'Clang URL'
@@ -29,6 +29,10 @@ on:
         required: true
         default: 'git submodule init ; git submodule update'      
       
+      zip_name:
+        description: 'zip name'
+        required: true
+        default: 'kernel-oos' 
       
       ksu_path_or_KPROBES:
         description: '[0，1，2，3,  4]->[path-su,kprobes-su,only-path-su,only-kprobes-su,no-su]'
@@ -81,7 +85,7 @@ jobs:
         cd AnyKernel3
         zip -r kernel-\$1-$(TZ=Asia/Shanghai date "+%Y%m%d%H%M").zip *
         mkdir ../../666 || echo ""
-        cp -r kernel-\$1-$(TZ=Asia/Shanghai date "+%Y%m%d%H%M").zip ../../666
+        cp -r $1-\$2-$(TZ=Asia/Shanghai date "+%Y%m%d%H%M").zip ../../666
         end
         
         if [ ${{ github.event.inputs.ksu_path_or_KPROBES }} == "0" ] || [ ${{ github.event.inputs.ksu_path_or_KPROBES }} == "1" ] || [ ${{ github.event.inputs.ksu_path_or_KPROBES }} == "4" ];then
@@ -91,7 +95,7 @@ jobs:
         rm -rf out/.config
         mv .config1 out/.config
         make O=out -j$(nproc --all) CC="ccache clang" CXX="ccache clang++" ARCH=arm64 CROSS_COMPILE=$CLANG_PATH/bin/aarch64-linux-gnu- CROSS_COMPILE_ARM32=$CLANG_PATH/bin/arm-linux-gnueabi- LD=ld.lld || exit 2>&1 | tee kernel.log
-        sh AnyKernel3.sh 
+        sh AnyKernel3.sh ${{ github.event.inputs.zip_name }}
         fi
 
         if [ ${{ github.event.inputs.ksu_path_or_KPROBES }} == "0" ] || [ ${{ github.event.inputs.ksu_path_or_KPROBES }} == "1" ] || [ ${{ github.event.inputs.ksu_path_or_KPROBES }} == "2" ] || [ ${{ github.event.inputs.ksu_path_or_KPROBES }} == "3" ];then
@@ -124,7 +128,7 @@ jobs:
         echo "----------------------------"
         make O=out -j$(nproc --all) CC="ccache clang" CXX="ccache clang++" ARCH=arm64 CROSS_COMPILE=$CLANG_PATH/bin/aarch64-linux-gnu- CROSS_COMPILE_ARM32=$CLANG_PATH/bin/arm-linux-gnueabi- LD=ld.lld 2>&1 | tee kernel.log               
         echo "----------------------"
-        sh AnyKernel3.sh "KernelSU"
+        sh AnyKernel3.sh  ${{ github.event.inputs.zip_name }} "ksu"
         fi
 
     - name: 上传到onedrive
