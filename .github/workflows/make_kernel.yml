@@ -62,7 +62,6 @@ jobs:
         cd android-kernel
         ${{ github.event.inputs.shell }}
        
-    
     - name: 编译内核
       run: |
         cd android-kernel
@@ -72,7 +71,7 @@ jobs:
         export ARCH=arm64
         export SUBARCH=arm64
         export KBUILD_COMPILER_STRING="$(clang --version | head -n 1 )"
-        export KBUILD_BUILD_HOST=zhlhlf_linux
+        export KBUILD_BUILD_HOST=zhlhlf-linux
         export KBUILD_BUILD_USER=zhlhlf  
         
         cat > AnyKernel3.sh <<end
@@ -119,7 +118,7 @@ jobs:
         CONFIG_DM_VERITY=y
         CONFIG_DM_VERITY_AVB=y
         "
-        if [ ${{ github.event.inputs.ksu_path_or_KPROBES }} = '0' ] || [ ${{ github.event.inputs.ksu_path_or_KPROBES }} = '2' ];then git apply ../KernelSU.patch ; echo "path----------" ; fi 
+        if [ ${{ github.event.inputs.ksu_path_or_KPROBES }} = '0' ] || [ ${{ github.event.inputs.ksu_path_or_KPROBES }} = '2' ];then sh ../patches.sh ; echo "path----------" ; fi 
         if [ ${{ github.event.inputs.ksu_path_or_KPROBES }} = '1' ] || [ ${{ github.event.inputs.ksu_path_or_KPROBES }} = '3' ];then for i in $hh; do echo $i >> .config1; done; echo "kprobes----------" ; fi 
         mv .config1 out/.config
         echo "----------------------------"
