@@ -83,7 +83,7 @@ jobs:
         mv out/arch/arm64/boot/Image AnyKernel3/
         mv kernel.log AnyKernel3/
         cd AnyKernel3
-        zip -r kernel-\$1-$(TZ=Asia/Shanghai date "+%Y%m%d%H%M").zip *
+        zip -r $1--\$2-$(TZ=Asia/Shanghai date "+%Y%m%d%H%M").zip *
         mkdir ../../666 || echo ""
         cp -r $1-\$2-$(TZ=Asia/Shanghai date "+%Y%m%d%H%M").zip ../../666
         end
