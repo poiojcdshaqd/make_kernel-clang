@@ -83,9 +83,9 @@ jobs:
         mv out/arch/arm64/boot/Image AnyKernel3/
         mv kernel.log AnyKernel3/
         cd AnyKernel3
-        zip -r $1--\$2-$(TZ=Asia/Shanghai date "+%Y%m%d%H%M").zip *
+        zip -r \$1-\$2-$(TZ=Asia/Shanghai date "+%Y%m%d%H%M").zip *
         mkdir ../../666 || echo ""
-        cp -r $1-\$2-$(TZ=Asia/Shanghai date "+%Y%m%d%H%M").zip ../../666
+        cp -r \$1-\$2-$(TZ=Asia/Shanghai date "+%Y%m%d%H%M").zip ../../666
         end
         
         if [ ${{ github.event.inputs.ksu_path_or_KPROBES }} == "0" ] || [ ${{ github.event.inputs.ksu_path_or_KPROBES }} == "1" ] || [ ${{ github.event.inputs.ksu_path_or_KPROBES }} == "4" ];then
