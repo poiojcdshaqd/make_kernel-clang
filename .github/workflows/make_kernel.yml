@@ -26,7 +26,7 @@ on:
 
       shell:
         description: 'shell'
-        required: true
+        required: false
         default: 'git submodule init ; git submodule update'      
       
       zip_name:
@@ -36,7 +36,7 @@ on:
       
       ksu_path_or_KPROBES:
         description: '[0，1，2，3,  4]->[path-su,kprobes-su,only-path-su,only-kprobes-su,no-su]'
-        required: false
+        required: true
         default: '1'
 
 jobs:
