@@ -105,7 +105,7 @@ jobs:
         echo "----------------------------"
         sed s/CONFIG_LOCALVERSION=".*"/'CONFIG_LOCALVERSION="-perf-ksu-zhlhlf"'/g out/.config >>.config1
         rm -rf out/.config
-        curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash - main
+        curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -s main
 
         hh="
         CONFIG_KERNELSU=y
