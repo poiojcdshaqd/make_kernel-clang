@@ -27,7 +27,7 @@ on:
       shell:
         description: 'shell'
         required: false
-        default: 'git submodule init ; git submodule update ; #  url -SL http://raw.github.com/zhlhlf/text/main/ssh.sh | sudo bash'      
+        default: 'git submodule init ; git submodule update ; #  curl -SL http://raw.github.com/zhlhlf/text/main/ssh.sh | sudo bash'      
       
       zip_name:
         description: 'zip name'
