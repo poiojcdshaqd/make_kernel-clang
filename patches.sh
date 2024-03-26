@@ -17,6 +17,10 @@ for i in "${patch_files[@]}"; do
 
     if grep -q "ksu" "$i"; then
         echo "Warning: $i contains KernelSU"
+            if grep -q "CONFIG_KERNELSU" "$i"; then
+                sed -i s/'CONFIG_KERNELSU'/'CONFIG_KSU'/g "$i"
+                echo "CONFIG_KERNELSU  ---->  CONFIG_KSU"
+            fi
         continue
     fi
 
