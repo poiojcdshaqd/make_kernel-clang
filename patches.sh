@@ -6,7 +6,6 @@ patch_files=(
 )	
 
 is_ksu=0
-
 for i in "${patch_files[@]}"; do	
     if grep -q "ksu" "$i"; then	
         echo "Warning: $i contains KernelSU"	
@@ -23,5 +22,6 @@ if [ $is_ksu == "1"  ];then
 fi
 
 if git apply --check ../KernelSU.patch ; then
+   echo "patch ksu补丁……"
    git apply ../KernelSU.patch
 fi
