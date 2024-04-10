@@ -19,10 +19,10 @@ on:
         required: true
         default: 'vendor/kona-perf_defconfig'
 
-      CLANG_URL:
-        description: 'Clang URL'
+      CLANG_v:
+        description: 'Clang version  14  16  17'
         required: true
-        default: 'https://github.com/ZyCromerZ/Clang/releases/download/17.0.0-20230725-release/Clang-17.0.0-20230725.tar.gz'      
+        default: '17'      
 
       shell:
         description: 'shell'
@@ -56,8 +56,11 @@ jobs:
     - name: 下载clang和内核源
       run: |
         mkdir clang
-        aria2c -j10 ${{ github.event.inputs.CLANG_URL }} -o clang.tar.gz
+        curl "https://github.com/ZyCromerZ/Clang/releases?q=${{ github.event.inputs.CLANG_URL }}&expanded=true" | grep 'https://github.com/ZyCromerZ/Clang/releases/expanded_assets/' | sed -n 1p | awk -F'"' '{print $6}' > clang_url.txt 
+        curl $(cat clang_url.txt) | grep ".tar.gz" | awk -F'"' '{print $2}' | sed -n 1p > url.txt && echo "https://github.com$(sed -n 1p url.txt)" > url.txt
+        aria2c -j10 $(sed -n 1p url.txt) -o clang.tar.gz
         tar -C clang/ -zxf clang.tar.gz
+        rm -rf clang_url.txt url.txt
         git clone --depth=1 ${{ github.event.inputs.KERNEL_SOURCE }} -b ${{ github.event.inputs.KERNEL_SOURCE_BRANCH }} android-kernel
         cd android-kernel
         ${{ github.event.inputs.shell }}
