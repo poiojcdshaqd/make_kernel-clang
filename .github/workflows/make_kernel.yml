@@ -56,7 +56,7 @@ jobs:
     - name: 下载clang和内核源
       run: |
         mkdir clang
-        curl "https://github.com/ZyCromerZ/Clang/releases?q=${{ github.event.inputs.CLANG_URL }}&expanded=true" | grep 'https://github.com/ZyCromerZ/Clang/releases/expanded_assets/' | sed -n 1p | awk -F'"' '{print $6}' > clang_url.txt 
+        curl "https://github.com/ZyCromerZ/Clang/releases?q=${{ github.event.inputs.CLANG_v }}&expanded=true" | grep 'https://github.com/ZyCromerZ/Clang/releases/expanded_assets/' | sed -n 1p | awk -F'"' '{print $6}' > clang_url.txt 
         curl $(cat clang_url.txt) | grep ".tar.gz" | awk -F'"' '{print $2}' | sed -n 1p > url.txt && echo "https://github.com$(sed -n 1p url.txt)" > url.txt
         aria2c -j10 $(sed -n 1p url.txt) -o clang.tar.gz
         tar -C clang/ -zxf clang.tar.gz
