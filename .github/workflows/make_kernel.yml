@@ -150,7 +150,6 @@ jobs:
           tag: "CI_BUILD"
           name: ${{ github.event.inputs.zip_name }}-${{ env.BUILD_TIME }}
           body: |
-           Note:
             source : ${{ github.event.inputs.KERNEL_SOURCE }}
             source_branch : ${{ github.event.inputs.KERNEL_SOURCE_BRANCH }}
             deconfig : ${{ github.event.inputs.KERNEL_DEFCONFIG }}
