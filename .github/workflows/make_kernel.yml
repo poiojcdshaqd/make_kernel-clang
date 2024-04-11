@@ -147,6 +147,10 @@ jobs:
       with:
           tag: "CI_BUILD"
           name: ${{ github.event.inputs.zip_name }}-${{ env.BUILD_TIME }}
+          body: |
+            source : ${{ github.event.inputs.KERNEL_SOURCE }}
+            branch : ${{ github.event.inputs.KERNEL_SOURCE_BRANCH }}
+            deconfig : ${{ github.event.inputs.KERNEL_DEFCONFIG }}
           artifacts: '666/*'
 
     - name: 上传到onedrive
