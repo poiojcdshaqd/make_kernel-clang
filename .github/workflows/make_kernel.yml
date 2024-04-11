@@ -146,7 +146,7 @@ jobs:
       if: github.event.inputs.upload  == '1'
       uses: ncipollo/release-action@v1
       with:
-          tag: "build_${{ github.run_number }}"
+          tag: "${{ env.DEVICE }}_${{ github.run_number }}_${{ env.KSUV }}"
           name: ${{ github.event.inputs.zip_name }}-${{ env.BUILD_TIME }}
           body: |
             source : ${{ github.event.inputs.KERNEL_SOURCE }}
