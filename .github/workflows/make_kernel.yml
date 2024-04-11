@@ -35,15 +35,15 @@ on:
         default: 'kernel-oos' 
       
       ksu_path_or_KPROBES:
-        description: '[0，1，2，3,  4]->[path-su,kprobes-su,only-path-su,only-kprobes-su,no-su]'
+        description: '[0，1，2，3, 4]->[path-su,kprobes-su,only-path-su,only-kprobes-su,no-su]'
         required: true
         default: '1'
 
-      upload_one:
-        description: 'true -> one   false->'
+      upload:
+        description: '[0,1]->[one,release]'
         required: true
-        default: 'true' 
-        type: Boolean
+        default: '0' 
+    
 
 jobs:
   build:
@@ -141,13 +141,13 @@ jobs:
         if [ $(ls 666/* | grep -i ".zip") ];then exit; fi
 
     - name: Upload kernel
-      if: github.event.inputs.zip_name  == 'false'
+      if: github.event.inputs.upload  == '1'
       uses: actions/upload-artifact@v3
       with:
           name: kernel
           path: './666'
 
     - name: 上传到onedrive
-      if: github.event.inputs.zip_name  == 'true'
+      if: github.event.inputs.upload  == '0'
       run: |
          wget -q https://raw.githubusercontent.com/zhlhlf/text/main/onedrive_mount.sh && sh onedrive_mount.sh ${{ secrets.RCK }} 临时存放文件
