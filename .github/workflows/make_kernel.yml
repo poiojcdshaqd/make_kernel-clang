@@ -37,7 +37,7 @@ on:
       ksu_path_or_KPROBES:
         description: '[0，1，2，3, 4]->[path-su,kprobes-su,only-path-su,only-kprobes-su,no-su]'
         required: true
-        default: '1'
+        default: '2'
 
       upload:
         description: '[0,1]->[one,release]'
