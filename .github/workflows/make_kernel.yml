@@ -147,7 +147,7 @@ jobs:
       uses: ncipollo/release-action@v1
       with:
           tag: "${{ env.DEVICE }}_${{ github.run_number }}_${{ env.KSUV }}"
-          name: ${{ github.event.inputs.zip_name }}-${{ env.BUILD_TIME }}
+          name: "${{ env.DEVICE }}_${{ github.run_number }}_${{ env.KSUV }}"
           body: |
             source : ${{ github.event.inputs.KERNEL_SOURCE }}
             source_branch : ${{ github.event.inputs.KERNEL_SOURCE_BRANCH }}
