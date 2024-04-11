@@ -89,7 +89,7 @@ jobs:
         rm -rf AnyKernel3/.git
         mv out/arch/arm64/boot/dtbo.img AnyKernel3/ || mv out/arch/arm64/boot/dtbo AnyKernel3/ || echo "没有dtbo*"
         mv out/arch/arm64/boot/Image AnyKernel3/ || mv out/arch/arm64/boot/Image.gz AnyKernel3/ || exit 0
-        mv kernel.log AnyKernel3/
+        cp -r kernel*.log AnyKernel3/
         cd AnyKernel3
         zip -r \$1-\$2-$(TZ=Asia/Shanghai date "+%Y%m%d%H%M").zip *
         mkdir ../../666 || echo ""
@@ -134,12 +134,13 @@ jobs:
         cat out/.config | grep KPROBES
         cat out/.config | grep CONFIG_MODULES
         echo "----------------------------"
-        make O=out -j$(nproc --all) CC="ccache clang" CXX="ccache clang++" ARCH=arm64 CROSS_COMPILE=$CLANG_PATH/bin/aarch64-linux-gnu- CROSS_COMPILE_ARM32=$CLANG_PATH/bin/arm-linux-gnueabi- LD=ld.lld 2>&1 | tee kernel.log               
+        make O=out -j$(nproc --all) CC="ccache clang" CXX="ccache clang++" ARCH=arm64 CROSS_COMPILE=$CLANG_PATH/bin/aarch64-linux-gnu- CROSS_COMPILE_ARM32=$CLANG_PATH/bin/arm-linux-gnueabi- LD=ld.lld 2>&1 | tee kernel_ksu.log               
         echo "----------------------"
         sh AnyKernel3.sh  ${{ github.event.inputs.zip_name }} "ksu"
         fi
         if [ $(ls ../666/* | grep -i ".zip") ];then exit; fi
-        if [ ${{ github.event.inputs.upload }} = "1"  ];then mv ../666 ./; fi
+        if [ ${{ github.event.inputs.upload }} = "1"  ];then mv ../666 ./ ; fi
+        if [ -f ./kernel_ksu.log ];then echo "$(cat 6.log | grep 'KernelSU version' | sed -n 1p | awk '{print $4}')" >> $GITHUB_ENV ; fi
 
     - name: 上传到release
       if: github.event.inputs.upload  == '1'
@@ -149,8 +150,10 @@ jobs:
           name: ${{ github.event.inputs.zip_name }}-${{ env.BUILD_TIME }}
           body: |
             source : ${{ github.event.inputs.KERNEL_SOURCE }}
-            branch : ${{ github.event.inputs.KERNEL_SOURCE_BRANCH }}
+            source_branch : ${{ github.event.inputs.KERNEL_SOURCE_BRANCH }}
             deconfig : ${{ github.event.inputs.KERNEL_DEFCONFIG }}
+            device : ${{ env.DEVICE }}
+            ksu_v : ${{ env.ksu_v }}
           artifacts: '666/*'
 
     - name: 上传到onedrive
