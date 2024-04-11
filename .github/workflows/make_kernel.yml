@@ -140,14 +140,14 @@ jobs:
         fi
         if [ $(ls ../666/* | grep -i ".zip") ];then exit; fi
         if [ ${{ github.event.inputs.upload }} = "1"  ];then mv ../666 ./ ; fi
-        if [ -f ./kernel_ksu.log ];then echo "ksu_v=$(cat 6.log | grep 'KernelSU version' | sed -n 1p | awk '{print $4}')" >> $GITHUB_ENV ;  fi
+        if [ -f ./kernel_ksu.log ];then echo "ksu_v=$(cat kernel_ksu.log | grep 'KernelSU version' | sed -n 1p | awk '{print $4}')" >> $GITHUB_ENV ;  fi
         if [ ! -f ./kernel_ksu.log ];then echo "ksu_v=没有编译ksu" >> $GITHUB_ENV ;  fi
 
     - name: 上传到release
       if: github.event.inputs.upload  == '1'
       uses: ncipollo/release-action@v1
       with:
-          tag: "CI_BUILD"
+          tag: "build_${{ github.run_number }}"
           name: ${{ github.event.inputs.zip_name }}-${{ env.BUILD_TIME }}
           body: |
             source : ${{ github.event.inputs.KERNEL_SOURCE }}
