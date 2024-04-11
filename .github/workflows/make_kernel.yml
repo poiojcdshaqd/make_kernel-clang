@@ -140,6 +140,8 @@ jobs:
         fi
         if [ $(ls ../666/* | grep -i ".zip") ];then exit; fi
         if [ ${{ github.event.inputs.upload }} = "1"  ];then mv ../666 ./ ; fi
+        if [ -f ./kernel_ksu.log ];then oo=$(cat kernel_ksu.log | grep 'KernelSU version' | sed -n 1p | awk '{print $4}') ; echo "ksuv=$oo" >> $GITHUB_ENV ; echo "KSUV=$oo" ; fi
+        if [ ! -f ./kernel_ksu.log ];then echo "ksuv=没有编译ksu" >> $GITHUB_ENV ;  fi
 
     - name: 上传到release
       if: github.event.inputs.upload  == '1'
@@ -152,7 +154,7 @@ jobs:
             source_branch : ${{ github.event.inputs.KERNEL_SOURCE_BRANCH }}
             deconfig : ${{ github.event.inputs.KERNEL_DEFCONFIG }}
             device : ${{ env.DEVICE }}
-            ksu_v : $(cat android-kernel/kernel_ksu.log | grep 'KernelSU version' | sed -n 1p | awk '{print $4}' || echo "没有编译ksu")
+            ksu_v : ${{ env.KSUV }}
           artifacts: '666/*'
 
     - name: 上传到onedrive
