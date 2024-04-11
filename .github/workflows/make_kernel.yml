@@ -138,14 +138,14 @@ jobs:
         echo "----------------------"
         sh AnyKernel3.sh  ${{ github.event.inputs.zip_name }} "ksu"
         fi
-        if [ $(ls 666/* | grep -i ".zip") ];then exit; fi
+        if [ $(ls ../666/* | grep -i ".zip") ];then exit; fi
 
     - name: 上传到release
       if: github.event.inputs.upload  == '1'
       uses: actions/upload-artifact@v3
       with:
           name: kernel
-          path: './666'
+          path: '../666'
 
     - name: 上传到onedrive
       if: github.event.inputs.upload  == '0'
