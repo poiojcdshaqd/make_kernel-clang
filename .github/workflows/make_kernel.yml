@@ -145,6 +145,7 @@ jobs:
       if: github.event.inputs.upload  == '1'
       uses: ncipollo/release-action@v1
       with:
+          tag: "CI_BUILD"
           name: ${{ github.event.inputs.zip_name }}-${{ env.BUILD_TIME }}
           artifacts: '666/*'
 
