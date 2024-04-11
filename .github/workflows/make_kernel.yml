@@ -140,7 +140,7 @@ jobs:
         fi
         if [ $(ls 666/* | grep -i ".zip") ];then exit; fi
 
-    - name: Upload kernel
+    - name: 上传到release
       if: github.event.inputs.upload  == '1'
       uses: actions/upload-artifact@v3
       with:
