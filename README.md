@@ -15,4 +15,5 @@ https://github.com/ArrowOS-Devices/android_kernel_oneplus_sm8250
 https://github.com/Nameless-AOSP-OSS/kernel_oneplus_sm8250
 ```
 ```
+https://github.com/zhlhlf/android_kernel_oneplus_sm8250
 ```
