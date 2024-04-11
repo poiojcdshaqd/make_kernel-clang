@@ -137,7 +137,7 @@ jobs:
         make O=out -j$(nproc --all) CC="ccache clang" CXX="ccache clang++" ARCH=arm64 CROSS_COMPILE=$CLANG_PATH/bin/aarch64-linux-gnu- CROSS_COMPILE_ARM32=$CLANG_PATH/bin/arm-linux-gnueabi- LD=ld.lld 2>&1 | tee kernel_ksu.log               
         echo "----------------------"
         sh AnyKernel3.sh  ${{ github.event.inputs.zip_name }} "ksu"
-        oo=$(cat kernel_ksu.log | grep 'KernelSU version' | sed -n 1p | awk '{print $4}') ; echo "ksuv=$oo" >> $GITHUB_ENV ; echo "KSUV=$oo" ;
+        oo=$(cat kernel_ksu.log | grep 'KernelSU version' | sed -n 1p | awk '{print $4}') ; echo "KSUV=$oo" >> $GITHUB_ENV ; echo "KSUV=$oo" ;
         fi
         if [ $(ls ../666/* | grep -i ".zip") ];then exit; fi
         if [ ${{ github.event.inputs.upload }} = "1"  ];then mv ../666 ./ ; fi
