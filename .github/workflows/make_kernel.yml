@@ -20,7 +20,7 @@ on:
         default: 'vendor/kona-perf_defconfig'
 
       CLANG_s:
-        description: 'Clang version [14..]'
+        description: 'Clang  [14..]  or url'
         required: true
         default: '17'      
 
