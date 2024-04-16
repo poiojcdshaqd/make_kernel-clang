@@ -42,7 +42,7 @@ on:
       upload:
         description: '[0,1]->[one,release]'
         required: true
-        default: '0' 
+        default: '1' 
     
 
 jobs:
