@@ -70,6 +70,7 @@ jobs:
         fi
         aria2c -j10 $(sed -n 1p url.txt) -o clang.tar.gz
         tar -C clang/ -zxf clang.tar.gz
+        echo "clang_url=$(cat url.txt)" >> $GITHUB_ENV
         rm -rf clang_url.txt url.txt
         git clone --depth=1 ${{ github.event.inputs.KERNEL_SOURCE }} -b ${{ github.event.inputs.KERNEL_SOURCE_BRANCH }} android-kernel
         cd android-kernel
@@ -155,6 +156,7 @@ jobs:
           body: |
             source : ${{ github.event.inputs.KERNEL_SOURCE }}
             source_branch : ${{ github.event.inputs.KERNEL_SOURCE_BRANCH }}
+            clang_url : ${{ env.clang_url }}
             deconfig : ${{ github.event.inputs.KERNEL_DEFCONFIG }}
             device : ${{ env.DEVICE }}
             ksu_v : ${{ env.KSUV }}
