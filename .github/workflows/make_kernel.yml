@@ -62,7 +62,7 @@ jobs:
     - name: 下载clang和内核源
       run: |
         mkdir clang
-        if [ "$(echo $(echo ${{ github.event.inputs.CLANG_s }} | grep -i "http")" ];then
+        if [ "$(echo ${{ github.event.inputs.CLANG_s }} | grep -i "http")" ];then
         echo "clang 提供的是url"
         echo ${{ github.event.inputs.CLANG_s }} > url.txt
         else
