@@ -62,8 +62,8 @@ jobs:
     - name: 下载clang和内核源
       run: |
         mkdir clang
-        if [ "$(echo $(echo ${{ github.event.inputs.KERNEL_DEFCONFIG }} | grep "http")" ];then
-        echo ${{ github.event.inputs.KERNEL_DEFCONFIG }} > url.txt
+        if [ "$(echo $(echo ${{ github.event.inputs.CLANG_s }} | grep -i "http")" ];then
+        echo ${{ github.event.inputs.CLANG_s }} > url.txt
         else
         curl "https://github.com/ZyCromerZ/Clang/releases?q=${{ github.event.inputs.CLANG_s }}&expanded=true" | grep 'https://github.com/ZyCromerZ/Clang/releases/expanded_assets/' | sed -n 1p | awk -F'"' '{print $6}' > clang_url.txt 
         curl $(cat clang_url.txt) | grep ".tar.gz" | awk -F'"' '{print $2}' | sed -n 1p > url.txt && echo "https://github.com$(sed -n 1p url.txt)" > url.txt
