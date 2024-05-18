@@ -119,6 +119,7 @@ jobs:
         rm -rf KernelSU drivers/ksu
         sed -i s/'.*CONFIG_KERNELSU.*'//g drivers/Makefile
         sed -i '/menu "KernelSU"/,/endmenu/d' drivers/Kconfig
+        sed -i s/'obj-y.*+=.*ksu.*'//g
         curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -s main
         make O=out CC="ccache clang" CXX="ccache clang++" ARCH=arm64 CROSS_COMPILE=$CLANG_PATH/bin/aarch64-linux-gnu- CROSS_COMPILE_ARM32=$CLANG_PATH/bin/arm-linux-gnueabi- LD=ld.lld ${{ github.event.inputs.KERNEL_DEFCONFIG }}
         echo "----------------------------"
