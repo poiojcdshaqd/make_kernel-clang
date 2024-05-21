@@ -98,6 +98,7 @@ jobs:
         mv out/arch/arm64/boot/Image AnyKernel3/ || mv out/arch/arm64/boot/Image.gz AnyKernel3/ || exit 0
         cp -r kernel*.log AnyKernel3/
         cd AnyKernel3
+        echo "source : ${{ github.event.inputs.KERNEL_SOURCE }} \n source_branch : ${{ github.event.inputs.KERNEL_SOURCE_BRANCH }} \n deconfig : ${{ github.event.inputs.KERNEL_DEFCONFIG }} \n clang_url : ${{ env.clang_url }} \n" > meta.txt
         zip -r \$1-\$2-$(TZ=Asia/Shanghai date "+%Y%m%d%H%M").zip *
         mkdir ../../666 || echo ""
         cp -r \$1-\$2-$(TZ=Asia/Shanghai date "+%Y%m%d%H%M").zip ../../666
