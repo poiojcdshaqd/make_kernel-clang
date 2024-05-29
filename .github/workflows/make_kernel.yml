@@ -148,7 +148,7 @@ jobs:
         "
         
         #去模块签名、版本检验
-        #sed -i s/'err = module_sig_check(info, flags);'/'err=0;'/g kernel/module.c
+        sed -i s/'return strcmp(amagic, bmagic) == 0;'/'return 1;'/g kernel/module.c
         #sed -i s/'err = check_modinfo(info->mod, info, flags);'/'err=0;'/g kernel/module.c
        
         if [ ${{ github.event.inputs.ksu_path_or_KPROBES }} = '0' ] || [ ${{ github.event.inputs.ksu_path_or_KPROBES }} = '2' ];then bash ../patches.sh ; echo "path----------" ; fi 
