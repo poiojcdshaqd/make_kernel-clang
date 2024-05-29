@@ -76,7 +76,7 @@ jobs:
         rm -rf clang_url.txt url.txt
         git clone --depth=1 ${{ github.event.inputs.KERNEL_SOURCE }} -b ${{ github.event.inputs.KERNEL_SOURCE_BRANCH }} android-kernel
         cd android-kernel
-        sed -i s#'git@github.com:'#'https://github.com/'#g .gitmodules
+        if [ -f ".gitmodules" ];then sed -i s#'git@github.com:'#'https://github.com/'#g .gitmodules; fi
         git submodule init
         git submodule update 
         ${{ github.event.inputs.shell }}
