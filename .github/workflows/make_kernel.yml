@@ -133,7 +133,7 @@ jobs:
 
         hh1="
         CONFIG_MODULES=y
-        CONFIG_MODULE_SIG=y
+        #CONFIG_MODULE_SIG=y
         CONFIG_MODULE_SIG_FORCE=n
         #CONFIG_MODVERSIONS=n
         CONFIG_MODULE_FORCE_LOAD=y
@@ -148,8 +148,8 @@ jobs:
         "
         
         #去模块签名、版本检验
-        sed -i s/'err = module_sig_check(info, flags);'/'err=0;'/g kernel/module.c
-        sed -i s/'err = check_modinfo(info->mod, info, flags);'/'err=0;'/g kernel/module.c
+        #sed -i s/'err = module_sig_check(info, flags);'/'err=0;'/g kernel/module.c
+        #sed -i s/'err = check_modinfo(info->mod, info, flags);'/'err=0;'/g kernel/module.c
        
         if [ ${{ github.event.inputs.ksu_path_or_KPROBES }} = '0' ] || [ ${{ github.event.inputs.ksu_path_or_KPROBES }} = '2' ];then bash ../patches.sh ; echo "path----------" ; fi 
         if [ ${{ github.event.inputs.ksu_path_or_KPROBES }} = '1' ] || [ ${{ github.event.inputs.ksu_path_or_KPROBES }} = '3' ];then for i in $hh; do echo $i >> .config1; done; echo "kprobes----------" ; fi 
