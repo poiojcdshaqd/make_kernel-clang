@@ -32,7 +32,7 @@ on:
       zip_name:
         description: 'zip name'
         required: true
-        default: 'kernel' 
+        default: 'oos' 
       
       ksu_path_or_KPROBES:
         description: '[0，1，2，3, 4]->[path-su,kprobes-su,only-path-su,only-kprobes-su,no-su]'
