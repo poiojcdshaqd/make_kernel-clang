@@ -133,7 +133,7 @@ jobs:
 
         hh1="
         CONFIG_MODULES=y
-        CONFIG_MODULE_SIG=n
+        CONFIG_MODULE_SIG=y
         CONFIG_MODULE_SIG_FORCE=n
         #CONFIG_MODVERSIONS=n
         CONFIG_MODULE_FORCE_LOAD=y
