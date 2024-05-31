@@ -73,7 +73,7 @@ jobs:
         aria2c -j10 $(sed -n 1p url.txt) -o clang.tar.gz
         tar -C clang/ -zxf clang.tar.gz
         echo "clang_url=$(cat url.txt)" >> $GITHUB_ENV
-        rm -rf clang_url.txt url.txt
+        rm -rf clang_url.txt url.txt clang.tar.gz
         git clone --depth=1 ${{ github.event.inputs.KERNEL_SOURCE }} -b ${{ github.event.inputs.KERNEL_SOURCE_BRANCH }} android-kernel
         cd android-kernel
         if [ -f ".gitmodules" ];then sed -i s#'git@github.com:'#'https://github.com/'#g .gitmodules; fi
