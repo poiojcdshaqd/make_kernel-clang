@@ -144,6 +144,8 @@ jobs:
         CONFIG_DM_VERITY_AVB=y
         "
         hh="
+        CONFIG_MODULES=y
+        CONFIG_KSU=m
         CONFIG_KPROBES=y
         CONFIG_HAVE_KPROBES=y
         CONFIG_KPROBE_EVENTS=y
