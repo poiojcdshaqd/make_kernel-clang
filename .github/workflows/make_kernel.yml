@@ -133,6 +133,7 @@ jobs:
 
         hh1="
         CONFIG_MODULES=y
+        CONFIG_KSU=m
         CONFIG_MODULE_SIG=n
         CONFIG_MODULE_SIG_FORCE=n
         CONFIG_MODULE_UNLOAD=y
