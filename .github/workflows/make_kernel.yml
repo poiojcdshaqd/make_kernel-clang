@@ -144,8 +144,6 @@ jobs:
         CONFIG_DM_VERITY_AVB=y
         "
         hh="
-        CONFIG_MODULES=y
-        CONFIG_KSU=m
         CONFIG_KPROBES=y
         CONFIG_HAVE_KPROBES=y
         CONFIG_KPROBE_EVENTS=y
@@ -170,7 +168,7 @@ jobs:
         fi
         if [ $(ls ../666/* | grep -i ".zip") ];then exit; fi
         if [ ${{ github.event.inputs.upload }} = "1"  ];then mv ../666 ./ ; fi
-        find -name "*.ko"
+        mv `find -name "*.ko"` 666
         
     - name: 上传到release
       if: github.event.inputs.upload  == '1'
