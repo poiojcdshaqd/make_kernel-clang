@@ -172,6 +172,8 @@ jobs:
         if [ $(ls ../666/* | grep -i ".zip") ];then exit; fi
         if [ ${{ github.event.inputs.upload }} = "1"  ];then mv ../666 ./ ; fi
         cp -r `find -name "kernelsu.ko"` ../666/ || echo "no found kernelsu.ko"
+        echo ""
+        ls ../666
         
     - name: 上传到release
       if: github.event.inputs.upload  == '1'
