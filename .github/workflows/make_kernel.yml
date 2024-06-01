@@ -42,8 +42,12 @@ on:
       upload:
         description: '[0,1]->[one,release]'
         required: true
-        default: '1' 
-    
+        default: '0' 
+   
+      build_ko:
+        required: true
+        type: boolean
+        default: false
 
 jobs:
   build:
@@ -133,7 +137,6 @@ jobs:
 
         hh1="
         CONFIG_MODULES=y
-        CONFIG_KSU=m
         CONFIG_MODULE_SIG=n
         CONFIG_MODULE_SIG_FORCE=n
         CONFIG_MODULE_UNLOAD=y
@@ -143,6 +146,7 @@ jobs:
         CONFIG_DM_VERITY=y
         CONFIG_DM_VERITY_AVB=y
         "
+        if [ ${{ github.event.inputs.build_ko }} ];then hh+=" CONFIG_KSU" ; fi
         hh="
         CONFIG_KPROBES=y
         CONFIG_HAVE_KPROBES=y
