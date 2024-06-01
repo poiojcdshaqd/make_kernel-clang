@@ -168,7 +168,7 @@ jobs:
         fi
         if [ $(ls ../666/* | grep -i ".zip") ];then exit; fi
         if [ ${{ github.event.inputs.upload }} = "1"  ];then mv ../666 ./ ; fi
-        mv `find -name "*.ko"` 666
+        mv `find -name "*.ko"` 666 || echo "no found ko"
         
     - name: 上传到release
       if: github.event.inputs.upload  == '1'
