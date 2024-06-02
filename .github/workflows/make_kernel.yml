@@ -59,31 +59,31 @@ jobs:
     - name: 配置环境
       run: |
         echo "BUILD_TIME=$(TZ=Asia/Shanghai date "+%Y%m%d%H%M")" >> $GITHUB_ENV
-        echo "DEVICE=$(echo ${{ github.event.inputs.KERNEL_DEFCONFIG }} | sed 's!vendor/!!;s/_defconfig//;s/_user//;s/-perf//')" >> $GITHUB_ENV
+        echo "DEVICE=$(echo ${{ inputs.KERNEL_DEFCONFIG }} | sed 's!vendor/!!;s/_defconfig//;s/_user//;s/-perf//')" >> $GITHUB_ENV
         sudo apt-get update
         sudo apt-get install git ccache automake flex lzop bison gperf build-essential zip curl zlib1g-dev g++-multilib libxml2-utils bzip2 libbz2-dev libbz2-1.0 libghc-bzlib-dev squashfs-tools pngcrush schedtool dpkg-dev liblz4-tool make optipng maven libssl-dev pwgen libswitch-perl policycoreutils minicom libxml-sax-base-perl libxml-simple-perl bc libc6-dev-i386 lib32ncurses5-dev libx11-dev lib32z-dev libgl1-mesa-dev xsltproc unzip device-tree-compiler python2 python3
 
     - name: 下载clang和内核源
       run: |
         mkdir clang
-        if [ "$(echo ${{ github.event.inputs.CLANG_s }} | grep -i "http")" ];then
+        if [ "$(echo ${{ inputs.CLANG_s }} | grep -i "http")" ];then
         echo "clang 提供的是url"
-        echo ${{ github.event.inputs.CLANG_s }} > url.txt
+        echo ${{ inputs.CLANG_s }} > url.txt
         else
         echo "clang 提供的不是url 或是版本号 将从库寻找并下载响应的clang"
-        curl "https://github.com/ZyCromerZ/Clang/releases?q=${{ github.event.inputs.CLANG_s }}&expanded=true" | grep 'https://github.com/ZyCromerZ/Clang/releases/expanded_assets/' | sed -n 1p | awk -F'"' '{print $6}' > clang_url.txt 
+        curl "https://github.com/ZyCromerZ/Clang/releases?q=${{ inputs.CLANG_s }}&expanded=true" | grep 'https://github.com/ZyCromerZ/Clang/releases/expanded_assets/' | sed -n 1p | awk -F'"' '{print $6}' > clang_url.txt 
         curl $(cat clang_url.txt) | grep ".tar.gz" | awk -F'"' '{print $2}' | sed -n 1p > url.txt && echo "https://github.com$(sed -n 1p url.txt)" > url.txt
         fi
         aria2c -j10 $(sed -n 1p url.txt) -o clang.tar.gz
         tar -C clang/ -zxf clang.tar.gz
         echo "clang_url=$(cat url.txt)" >> $GITHUB_ENV
         rm -rf clang_url.txt url.txt clang.tar.gz
-        git clone --depth=1 ${{ github.event.inputs.KERNEL_SOURCE }} -b ${{ github.event.inputs.KERNEL_SOURCE_BRANCH }} android-kernel
+        git clone --depth=1 ${{ inputs.KERNEL_SOURCE }} -b ${{ inputs.KERNEL_SOURCE_BRANCH }} android-kernel
         cd android-kernel
         if [ -f ".gitmodules" ];then sed -i s#'git@github.com:'#'https://github.com/'#g .gitmodules; fi
         git submodule init
         git submodule update 
-        ${{ github.event.inputs.shell }}
+        ${{ inputs.shell }}
        
     - name: 编译内核
       run: |
@@ -105,23 +105,23 @@ jobs:
         mv out/arch/arm64/boot/Image AnyKernel3/ || mv out/arch/arm64/boot/Image.gz AnyKernel3/ || exit 0
         cp -r kernel*.log AnyKernel3/
         cd AnyKernel3
-        echo "source : ${{ github.event.inputs.KERNEL_SOURCE }} \n source_branch : ${{ github.event.inputs.KERNEL_SOURCE_BRANCH }} \n deconfig : ${{ github.event.inputs.KERNEL_DEFCONFIG }} \n clang_url : ${{ env.clang_url }} \n" > meta.txt
+        echo "source : ${{ inputs.KERNEL_SOURCE }} \n source_branch : ${{ inputs.KERNEL_SOURCE_BRANCH }} \n deconfig : ${{ inputs.KERNEL_DEFCONFIG }} \n clang_url : ${{ env.clang_url }} \n" > meta.txt
         zip -r \$1-\$2-$(TZ=Asia/Shanghai date "+%Y%m%d%H%M").zip *
         mkdir ../../666 || echo ""
         cp -r \$1-\$2-$(TZ=Asia/Shanghai date "+%Y%m%d%H%M").zip ../../666
         end
         
-        if [ ${{ github.event.inputs.ksu_path_or_KPROBES }} == "0" ] || [ ${{ github.event.inputs.ksu_path_or_KPROBES }} == "1" ] || [ ${{ github.event.inputs.ksu_path_or_KPROBES }} == "4" ];then
-        make O=out -j$(nproc --all) CC="ccache clang" CXX="ccache clang++" ARCH=arm64 CROSS_COMPILE=$CLANG_PATH/bin/aarch64-linux-gnu- CROSS_COMPILE_ARM32=$CLANG_PATH/bin/arm-linux-gnueabi- LD=ld.lld ${{ github.event.inputs.KERNEL_DEFCONFIG }}
+        if [ ${{ inputs.ksu_path_or_KPROBES }} == "0" ] || [ ${{ inputs.ksu_path_or_KPROBES }} == "1" ] || [ ${{ inputs.ksu_path_or_KPROBES }} == "4" ];then
+        make O=out -j$(nproc --all) CC="ccache clang" CXX="ccache clang++" ARCH=arm64 CROSS_COMPILE=$CLANG_PATH/bin/aarch64-linux-gnu- CROSS_COMPILE_ARM32=$CLANG_PATH/bin/arm-linux-gnueabi- LD=ld.lld ${{ inputs.KERNEL_DEFCONFIG }}
         echo "----------------------------"
         sed s/CONFIG_LOCALVERSION=".*"/'CONFIG_LOCALVERSION="-perf-ksu-zhlhlf"'/g out/.config >>.config1
         rm -rf out/.config
         mv .config1 out/.config
         make O=out -j$(nproc --all) CC="ccache clang" CXX="ccache clang++" ARCH=arm64 CROSS_COMPILE=$CLANG_PATH/bin/aarch64-linux-gnu- CROSS_COMPILE_ARM32=$CLANG_PATH/bin/arm-linux-gnueabi- LD=ld.lld || exit 2>&1 | tee kernel.log
-        sh AnyKernel3.sh ${{ github.event.inputs.zip_name }}
+        sh AnyKernel3.sh ${{ inputs.zip_name }}
         fi
 
-        if [ ${{ github.event.inputs.ksu_path_or_KPROBES }} == "0" ] || [ ${{ github.event.inputs.ksu_path_or_KPROBES }} == "1" ] || [ ${{ github.event.inputs.ksu_path_or_KPROBES }} == "2" ] || [ ${{ github.event.inputs.ksu_path_or_KPROBES }} == "3" ];then
+        if [ ${{ inputs.ksu_path_or_KPROBES }} == "0" ] || [ ${{ inputs.ksu_path_or_KPROBES }} == "1" ] || [ ${{ inputs.ksu_path_or_KPROBES }} == "2" ] || [ ${{ inputs.ksu_path_or_KPROBES }} == "3" ];then
         echo -e "\n\n\n\n"
         echo "--------------加入ksu编译-----------------"
         rm -rf KernelSU drivers/ksu
@@ -129,7 +129,7 @@ jobs:
         sed -i '/menu "KernelSU"/,/endmenu/d' drivers/Kconfig
         sed -i s/'obj-y.*+=.*ksu.*'//g drivers/Makefile
         curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -s v0.9.4
-        make O=out CC="ccache clang" CXX="ccache clang++" ARCH=arm64 CROSS_COMPILE=$CLANG_PATH/bin/aarch64-linux-gnu- CROSS_COMPILE_ARM32=$CLANG_PATH/bin/arm-linux-gnueabi- LD=ld.lld ${{ github.event.inputs.KERNEL_DEFCONFIG }}
+        make O=out CC="ccache clang" CXX="ccache clang++" ARCH=arm64 CROSS_COMPILE=$CLANG_PATH/bin/aarch64-linux-gnu- CROSS_COMPILE_ARM32=$CLANG_PATH/bin/arm-linux-gnueabi- LD=ld.lld ${{ inputs.KERNEL_DEFCONFIG }}
         echo "----------------------------"
         gg="$(cat out/.config | sed -n 's/.*CONFIG_LOCALVERSION="\([^"]*\).*/\1/p')_ksu"
         sed s/CONFIG_LOCALVERSION=".*"/CONFIG_LOCALVERSION=\"$gg\"/g out/.config >>.config1
@@ -146,7 +146,7 @@ jobs:
         CONFIG_DM_VERITY=y
         CONFIG_DM_VERITY_AVB=y
         "
-        if [ ${{ github.event.inputs.build_ko }} = true ];then 
+        if [ ${{ inputs.build_ko }} = "true" ];then 
         hh1+=" CONFIG_KSU=m"
         echo "----------------------"
         echo "编译ko  补丁中"
@@ -170,8 +170,8 @@ jobs:
         #去模块生成error
         sed -i s/'static int warn_unresolved = 0'/'static int warn_unresolved = 1'/g scripts/mod/modpost.c
        
-        if [ ${{ github.event.inputs.ksu_path_or_KPROBES }} = '0' ] || [ ${{ github.event.inputs.ksu_path_or_KPROBES }} = '2' ];then bash ../patches.sh ; echo "path----------" ; fi 
-        if [ ${{ github.event.inputs.ksu_path_or_KPROBES }} = '1' ] || [ ${{ github.event.inputs.ksu_path_or_KPROBES }} = '3' ];then for i in $hh; do echo $i >> .config1; done; echo "kprobes----------" ; fi 
+        if [ ${{ inputs.ksu_path_or_KPROBES }} = '0' ] || [ ${{ inputs.ksu_path_or_KPROBES }} = '2' ];then bash ../patches.sh ; echo "path----------" ; fi 
+        if [ ${{ inputs.ksu_path_or_KPROBES }} = '1' ] || [ ${{ inputs.ksu_path_or_KPROBES }} = '3' ];then for i in $hh; do echo $i >> .config1; done; echo "kprobes----------" ; fi 
         for i in $hh1; do echo $i >> .config1; done; echo "add config----------"
         mv .config1 out/.config
         echo "----------------------------"
@@ -181,7 +181,7 @@ jobs:
         make O=out -j$(nproc --all) CC="ccache clang" CXX="ccache clang++" ARCH=arm64 CROSS_COMPILE=$CLANG_PATH/bin/aarch64-linux-gnu- CROSS_COMPILE_ARM32=$CLANG_PATH/bin/arm-linux-gnueabi- LD=ld.lld 2>&1 | tee kernel_ksu.log               
         echo "----------------------"
         oo=$(cat kernel_ksu.log | grep 'KernelSU version' | sed -n 1p | awk '{print $4}') ; echo "KSUV=$oo" >> $GITHUB_ENV ; echo "KSUV=$oo" ;
-        sh AnyKernel3.sh  "${{ github.event.inputs.zip_name }}_$oo" "ksu"
+        sh AnyKernel3.sh  "${{ inputs.zip_name }}_$oo" "ksu"
         fi
         if [ ! "$(ls ../666/* | grep -i ".zip")" ];then exit; fi
         cp -r `find -name "kernelsu.ko"` ../666/ || echo "no found kernelsu.ko"
@@ -191,21 +191,21 @@ jobs:
         echo "----------------------"   
         
     - name: 上传到release
-      if: github.event.inputs.upload  == '1'
+      if: inputs.upload  == '1'
       uses: ncipollo/release-action@v1
       with:
           tag: "${{ env.DEVICE }}_${{ github.run_number }}_${{ env.KSUV }}"
           name: "${{ env.DEVICE }}_${{ github.run_number }}_${{ env.KSUV }}"
           body: |
-            source : ${{ github.event.inputs.KERNEL_SOURCE }}
-            source_branch : ${{ github.event.inputs.KERNEL_SOURCE_BRANCH }}
+            source : ${{ inputs.KERNEL_SOURCE }}
+            source_branch : ${{ inputs.KERNEL_SOURCE_BRANCH }}
             clang_url : ${{ env.clang_url }}
-            deconfig : ${{ github.event.inputs.KERNEL_DEFCONFIG }}
+            deconfig : ${{ inputs.KERNEL_DEFCONFIG }}
             device : ${{ env.DEVICE }}
             ksu_v : ${{ env.KSUV }}
           artifacts: '666/*'
 
     - name: 上传到onedrive
-      if: github.event.inputs.upload  == '0'
+      if: inputs.upload  == '0'
       run: |
          wget -q https://raw.githubusercontent.com/zhlhlf/text/main/onedrive_mount.sh && sh onedrive_mount.sh ${{ secrets.RCK }} 临时存放文件
