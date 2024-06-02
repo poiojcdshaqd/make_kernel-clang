@@ -146,8 +146,8 @@ jobs:
         CONFIG_DM_VERITY=y
         CONFIG_DM_VERITY_AVB=y
         "
-        if [ ${{ github.event.inputs.build_ko }} = "1" ];then 
-        hh1+=" CONFIG_KSU"
+        if [ ${{ github.event.inputs.build_ko }} = true ];then 
+        hh1+=" CONFIG_KSU=m"
         echo "----------------------"
         echo "编译ko  补丁中"
         echo "----------------------"   
