@@ -150,11 +150,11 @@ jobs:
         hh1+=" CONFIG_KSU=m"
         echo "----------------------"
         echo "编译ko  补丁中"
-        echo "----------------------"   
        
         echo "[+] Add KernelSU symbols"
         # python3 ../KernelSU/scripts/abi_gki_all.py android/abi_gki_aarch64.xml > android/abi_gki_aarch64.xml
         cat ../KernelSU/kernel/export_symbol.txt | awk '{sub("[ \t]+","");print "  "$0}' >> android/abi_gki_aarch64
+        echo "----------------------"   
         fi
         
         hh="
