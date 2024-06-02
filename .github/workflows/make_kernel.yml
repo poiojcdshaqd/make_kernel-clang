@@ -4,6 +4,12 @@ on:
   workflow_dispatch:
 
     inputs:
+       
+      build_ko:
+        required: true
+        type: boolean
+        default: false
+        
       KERNEL_SOURCE:
         description: 'Kernel Source'
         required: true
@@ -43,11 +49,7 @@ on:
         description: '[0,1]->[one,release]'
         required: true
         default: '0' 
-   
-      build_ko:
-        required: true
-        type: boolean
-        default: false
+
 
 jobs:
   build:
