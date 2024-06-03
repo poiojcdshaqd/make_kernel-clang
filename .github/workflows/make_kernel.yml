@@ -156,10 +156,10 @@ jobs:
         CONFIG_DM_VERITY_AVB=y
         "
         if [ ${{ inputs.build_ko }} = "true" ];then 
-        hh1+=" CONFIG_KSU=m"
         echo "----------------------"
         echo "编译ko  补丁中"
-       
+        sed -i s/'obj-.*kernelsu.o'/'obj-m += kernelsu.o'/g KernelSU/kernel/Makefile
+        
         echo "[+] Add KernelSU symbols"
         # python3 KernelSU/scripts/abi_gki_all.py android/abi_gki_aarch64.xml > android/abi_gki_aarch64.xml
         cat KernelSU/kernel/export_symbol.txt | awk '{sub("[ \t]+","");print "  "$0}' >> android/abi_gki_aarch64
