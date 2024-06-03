@@ -168,6 +168,9 @@ jobs:
         #sed -i s/'static int warn_unresolved = 0'/'static int warn_unresolved = 1'/g scripts/mod/modpost.c
        
         echo "----------------------"   
+        else
+        if [ ${{ inputs.ksu_path_or_KPROBES }} = '0' ] || [ ${{ inputs.ksu_path_or_KPROBES }} = '2' ];then bash ../patches.sh ; echo "path----------" ; fi 
+        if [ ${{ inputs.ksu_path_or_KPROBES }} = '1' ] || [ ${{ inputs.ksu_path_or_KPROBES }} = '3' ];then for i in $hh; do echo $i >> .config1; done; echo "kprobes----------" ; fi 
         fi
         
         hh="
@@ -175,13 +178,11 @@ jobs:
         CONFIG_HAVE_KPROBES=y
         CONFIG_KPROBE_EVENTS=y
         "
-        
+    
         #去模块签名、版本检验
         sed -i s/'return strcmp(amagic, bmagic) == 0;'/'return 1;'/g kernel/module.c
         #sed -i s/'err = check_modinfo(info->mod, info, flags);'/'err=0;'/g kernel/module.c
 
-        if [ ${{ inputs.ksu_path_or_KPROBES }} = '0' ] || [ ${{ inputs.ksu_path_or_KPROBES }} = '2' ];then bash ../patches.sh ; echo "path----------" ; fi 
-        if [ ${{ inputs.ksu_path_or_KPROBES }} = '1' ] || [ ${{ inputs.ksu_path_or_KPROBES }} = '3' ];then for i in $hh; do echo $i >> .config1; done; echo "kprobes----------" ; fi 
         for i in $hh1; do echo $i >> .config1; done; echo "add config----------"
         mv .config1 out/.config
         echo "----------------------------"
