@@ -10,6 +10,13 @@ on:
         type: boolean
         default: false
         
+      ksu_v:
+        required: true
+        type: string
+        default: v0.9.0
+        description: >
+          ksu branch 
+          
       KERNEL_SOURCE:
         description: 'Kernel Source'
         required: true
@@ -130,7 +137,7 @@ jobs:
         sed -i s/'.*CONFIG_KERNELSU.*'//g drivers/Makefile
         sed -i '/menu "KernelSU"/,/endmenu/d' drivers/Kconfig
         sed -i s/'obj-y.*+=.*ksu.*'//g drivers/Makefile
-        curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -s v0.9.4
+        curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -s ${{ inputs.ksu_v }}
         make O=out CC="ccache clang" CXX="ccache clang++" ARCH=arm64 CROSS_COMPILE=$CLANG_PATH/bin/aarch64-linux-gnu- CROSS_COMPILE_ARM32=$CLANG_PATH/bin/arm-linux-gnueabi- LD=ld.lld ${{ inputs.KERNEL_DEFCONFIG }}
         echo "----------------------------"
         gg="$(cat out/.config | sed -n 's/.*CONFIG_LOCALVERSION="\([^"]*\).*/\1/p')_ksu"
