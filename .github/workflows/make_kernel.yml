@@ -163,6 +163,10 @@ jobs:
         echo "[+] Add KernelSU symbols"
         # python3 KernelSU/scripts/abi_gki_all.py android/abi_gki_aarch64.xml > android/abi_gki_aarch64.xml
         cat KernelSU/kernel/export_symbol.txt | awk '{sub("[ \t]+","");print "  "$0}' >> android/abi_gki_aarch64
+        
+        #去模块生成error
+        #sed -i s/'static int warn_unresolved = 0'/'static int warn_unresolved = 1'/g scripts/mod/modpost.c
+       
         echo "----------------------"   
         fi
         
@@ -176,9 +180,6 @@ jobs:
         sed -i s/'return strcmp(amagic, bmagic) == 0;'/'return 1;'/g kernel/module.c
         #sed -i s/'err = check_modinfo(info->mod, info, flags);'/'err=0;'/g kernel/module.c
 
-        #去模块生成error
-        sed -i s/'static int warn_unresolved = 0'/'static int warn_unresolved = 1'/g scripts/mod/modpost.c
-       
         if [ ${{ inputs.ksu_path_or_KPROBES }} = '0' ] || [ ${{ inputs.ksu_path_or_KPROBES }} = '2' ];then bash ../patches.sh ; echo "path----------" ; fi 
         if [ ${{ inputs.ksu_path_or_KPROBES }} = '1' ] || [ ${{ inputs.ksu_path_or_KPROBES }} = '3' ];then for i in $hh; do echo $i >> .config1; done; echo "kprobes----------" ; fi 
         for i in $hh1; do echo $i >> .config1; done; echo "add config----------"
