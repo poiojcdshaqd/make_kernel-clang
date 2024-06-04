@@ -159,6 +159,8 @@ jobs:
         echo "\n\n----------------------"
         echo "编译ko  补丁中"
         sed -i s/'obj-.*kernelsu.o'/'obj-m += kernelsu.o'/g KernelSU/kernel/Makefile
+        #取消ksu patch内核补丁
+        bash ../patches.sh zhlhlf
         
         echo "[+] Add KernelSU symbols"
         # python3 KernelSU/scripts/abi_gki_all.py android/abi_gki_aarch64.xml > android/abi_gki_aarch64.xml
