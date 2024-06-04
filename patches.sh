@@ -23,7 +23,7 @@ for i in "${patch_files[@]}"; do
             fi
         if [ "$1" ];then
             echo "# CONFIG_KSU  ->  $i"
-            sed s/'CONFIG_KSU'/'CONFIG_zhlhlfaaaa'/g $i
+            sed -i s/'CONFIG_KSU'/'CONFIG_zhlhlfaaaa'/g $i
         fi
         continue
     fi
