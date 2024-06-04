@@ -79,7 +79,7 @@ jobs:
         echo "clang 提供的是url"
         echo ${{ inputs.CLANG_s }} > url.txt
         else
-        echo "clang 提供的不是url 或是版本号 将从库寻找并下载响应的clang"
+        echo "clang 提供的不是url 或是版本号${{ inputs.CLANG_s }} 将从库寻找并下载响应的clang"
         curl "https://github.com/ZyCromerZ/Clang/releases?q=${{ inputs.CLANG_s }}&expanded=true" | grep 'https://github.com/ZyCromerZ/Clang/releases/expanded_assets/' | sed -n 1p | awk -F'"' '{print $6}' > clang_url.txt 
         curl $(cat clang_url.txt) | grep ".tar.gz" | awk -F'"' '{print $2}' | sed -n 1p > url.txt && echo "https://github.com$(sed -n 1p url.txt)" > url.txt
         fi
