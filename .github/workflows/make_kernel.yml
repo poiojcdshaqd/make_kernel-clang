@@ -195,7 +195,7 @@ jobs:
         oo=$(cat kernel_ksu.log | grep 'KernelSU version' | sed -n 1p | awk '{print $4}') ; echo "KSUV=$oo" >> $GITHUB_ENV ; echo "KSUV=$oo" ;
         sh AnyKernel3.sh  "${{ inputs.zip_name }}_$oo" "ksu"
         fi
-        if [ ! "$(ls ../666/* | grep -i ".zip")" ];then exit 0; fi
+        if [ ! "$(ls ../666/ | grep -i ".zip")" ];then exit ; fi
         cp -r `find -name "kernelsu.ko" | sed -n 1p` ../666/ || echo "no found kernelsu.ko"
         echo "\n\n----------------------"
         echo ""
