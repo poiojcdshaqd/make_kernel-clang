@@ -21,8 +21,12 @@ for i in "${patch_files[@]}"; do
                 sed -i s/'CONFIG_KERNELSU'/'CONFIG_KSU'/g "$i"
                 echo "CONFIG_KERNELSU  ---->  CONFIG_KSU"
             fi
+        if [ "$1" ];then
+            sed s/'CONFIG_KSU'/'CONFIG_zhlhlfaaaa'/g $i
+        fi
         continue
     fi
+
 
     case $i in
 
