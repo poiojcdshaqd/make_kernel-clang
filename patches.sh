@@ -27,7 +27,10 @@ for i in "${patch_files[@]}"; do
         fi
         continue
     fi
-
+        if [ "$1" ];then
+            continue
+        fi
+       
 
     case $i in
 
