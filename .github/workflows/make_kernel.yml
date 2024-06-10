@@ -167,7 +167,7 @@ jobs:
         cat KernelSU/kernel/export_symbol.txt | awk '{sub("[ \t]+","");print "  "$0}' >> android/abi_gki_aarch64
         
         #去模块生成error
-        sed -i s/'static int warn_unresolved = 0'/'static int warn_unresolved = 1'/g scripts/mod/modpost.c
+        #sed -i s/'static int warn_unresolved = 0'/'static int warn_unresolved = 1'/g scripts/mod/modpost.c
        
         echo "\n----------------------"   
         else
