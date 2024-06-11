@@ -141,7 +141,7 @@ jobs:
         make O=out CC="ccache clang" CXX="ccache clang++" ARCH=arm64 CROSS_COMPILE=$CLANG_PATH/bin/aarch64-linux-gnu- CROSS_COMPILE_ARM32=$CLANG_PATH/bin/arm-linux-gnueabi- LD=ld.lld ${{ inputs.KERNEL_DEFCONFIG }}
         echo "\n----------------------------"
         gg="$(cat out/.config | sed -n 's/.*CONFIG_LOCALVERSION="\([^"]*\).*/\1/p')_ksu"
-        sed s/CONFIG_LOCALVERSION=".*"/CONFIG_LOCALVERSION=\"$gg\"/g out/.config >>.config1
+        # sed s/CONFIG_LOCALVERSION=".*"/CONFIG_LOCALVERSION=\"$gg\"/g out/.config >>.config1
         rm -rf out/.config
 
         hh1="
