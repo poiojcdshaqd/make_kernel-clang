@@ -154,9 +154,6 @@ jobs:
         CONFIG_SECURITY_SELINUX_DEVELOP=y
         CONFIG_DM_VERITY=y
         CONFIG_DM_VERITY_AVB=y
-        CONFIG_KPROBES=n
-        CONFIG_HAVE_KPROBES=n
-        CONFIG_KPROBE_EVENTS=n
         "
         if [ ${{ inputs.build_ko }} = "true" ];then 
         echo "\n\n----------------------"
