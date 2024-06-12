@@ -115,9 +115,9 @@ jobs:
         cp -r kernel*.log AnyKernel3/
         cd AnyKernel3
         echo "source : ${{ inputs.KERNEL_SOURCE }} \n source_branch : ${{ inputs.KERNEL_SOURCE_BRANCH }} \n deconfig : ${{ inputs.KERNEL_DEFCONFIG }} \n clang_url : ${{ env.clang_url }} \n" > meta.txt
-        zip -r \$1-\$2-$(TZ=Asia/Shanghai date "+%Y%m%d%H%M").zip *
+        zip -r \$1-\$2-$(TZ=Asia/Shanghai date "+%Y-%m-%d").zip *
         mkdir ../../666 || echo ""
-        cp -r \$1-\$2-$(TZ=Asia/Shanghai date "+%Y%m%d%H%M").zip ../../666
+        mv \$1-\$2-$(TZ=Asia/Shanghai date "+%Y-%m-%d").zip ../../666
         end
         
         if [ ${{ inputs.ksu_path_or_KPROBES }} == "0" ] || [ ${{ inputs.ksu_path_or_KPROBES }} == "1" ] || [ ${{ inputs.ksu_path_or_KPROBES }} == "4" ];then
