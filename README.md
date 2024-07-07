@@ -1,6 +1,6 @@
 # make_kernel-clang
 ```
-https://github.com/zhlhlf/IllusionX_sm8250
+https://github.com/ppajda/android_kernel_oneplus_sm8250
 ```
 ```
 https://github.com/OnePlusOSS/android_kernel_oneplus_sm8250
