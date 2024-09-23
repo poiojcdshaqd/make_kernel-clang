@@ -21,7 +21,7 @@ static int can_umount(const struct path *path, int flags)
 {
 	struct mount *mnt = real_mount(path->mnt);
 
-	if (flags \& ~(MNT_FORCE | MNT_DETACH | MNT_EXPIRE | UMOUNT_NOFOLLOW))
+	if (flags & ~(MNT_FORCE | MNT_DETACH | MNT_EXPIRE | UMOUNT_NOFOLLOW))
 		return -EINVAL;
 	if (!may_mount())
 		return -EPERM;
@@ -29,9 +29,9 @@ static int can_umount(const struct path *path, int flags)
 		return -EINVAL;
 	if (!check_mnt(mnt))
 		return -EINVAL;
-	if (mnt->mnt.mnt_flags \& MNT_LOCKED) \/* Check optimistically *\/
+	if (mnt->mnt.mnt_flags & MNT_LOCKED) /* Check optimistically */
 		return -EINVAL;
-	if (flags \& MNT_FORCE \&\& !capable(CAP_SYS_ADMIN))
+	if (flags & MNT_FORCE && !capable(CAP_SYS_ADMIN))
 		return -EPERM;
 	return 0;
 }
@@ -44,7 +44,7 @@ int path_umount(struct path *path, int flags)
 	ret = can_umount(path, flags);
 	if (!ret)
 		ret = do_umount(mnt, flags);
-	\/* we mustn't call path_put() as that would clear mnt_expiry_mark *\/
+	/* we mustn't call path_put() as that would clear mnt_expiry_mark */
 
 	dput(path->dentry);
 	mntput_no_expire(mnt);
@@ -55,7 +55,7 @@ zhlhlf
 
 for i in "${patch_files[@]}"; do
 
-    if grep -q "ksu" "$i" || grep -q "KernelSU" "$i"; then
+    if grep -qi "ksu" "$i" || grep -qi "KernelSU" "$i"; then
         if grep -q "CONFIG_KERNELSU" "$i"; then
                 echo "Warning: $i contains KernelSU"
                 sed -i s/'CONFIG_KERNELSU'/'CONFIG_KSU'/g "$i"
@@ -163,7 +163,11 @@ for i in "${patch_files[@]}"; do
         
     fs/namespace.c)
         if ! grep -q "int path_umount(struct path \*path, int flags)" $i; then      
-            sed -i "s/int ksys_umount(char __user \*name, int flags)/$Tonamespace \nint ksys_umount(char __user *name, int flags)/g" $i
+            x=`grep -n "int ksys_umount(char __user \*name, int flags)" $i | cut -d ':' -f 1`
+            x=$((x - 1))
+            echo "$Tonamespace" > contentn.txt
+            sed -i "${x}r contentn.txt" $i
+            rm -rf contentn.txt
         fi
         if grep -q "int path_umount(struct path \*path, int flags)" $i; then      
             echo "$i patch yes"
