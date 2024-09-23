@@ -2,8 +2,9 @@
 # Patches author: weishu <twsxtd@gmail.com>
 # Shell authon: xiaoleGun <1592501605@qq.com>
 #               bdqllW <bdqllT@gmail.com>
+#               zhlhlf <zhlhlf@gmail.com>
 # Tested kernel versions: 5.4, 4.19, 4.14, 4.9
-# 20240123
+# 20240923
 
 patch_files=(
     fs/exec.c
@@ -11,22 +12,63 @@ patch_files=(
     fs/read_write.c
     fs/stat.c
     drivers/input/input.c
+    fs/devpts/inode.c
+    fs/namespace.c
 )
+
+Tonamespace=<<zhlhlf
+static int can_umount(const struct path *path, int flags)
+{
+	struct mount *mnt = real_mount(path->mnt);
+
+	if (flags & ~(MNT_FORCE | MNT_DETACH | MNT_EXPIRE | UMOUNT_NOFOLLOW))
+		return -EINVAL;
+	if (!may_mount())
+		return -EPERM;
+	if (path->dentry != path->mnt->mnt_root)
+		return -EINVAL;
+	if (!check_mnt(mnt))
+		return -EINVAL;
+	if (mnt->mnt.mnt_flags & MNT_LOCKED) \/* Check optimistically *\/
+		return -EINVAL;
+	if (flags & MNT_FORCE && !capable(CAP_SYS_ADMIN))
+		return -EPERM;
+	return 0;
+}
+
+int path_umount(struct path *path, int flags)
+{
+	struct mount *mnt = real_mount(path->mnt);
+	int ret;
+
+	ret = can_umount(path, flags);
+	if (!ret)
+		ret = do_umount(mnt, flags);
+	\/* we mustn't call path_put() as that would clear mnt_expiry_mark *\/
+
+	dput(path->dentry);
+	mntput_no_expire(mnt);
+	return ret;
+}
+zhlhlf
+
 
 for i in "${patch_files[@]}"; do
 
-    if grep -q "ksu" "$i"; then
-        echo "Warning: $i contains KernelSU"
-            if grep -q "CONFIG_KERNELSU" "$i"; then
+    if grep -q "ksu" "$i" || grep -q "KernelSU" "$i"; then
+        if grep -q "CONFIG_KERNELSU" "$i"; then
+                echo "Warning: $i contains KernelSU"
                 sed -i s/'CONFIG_KERNELSU'/'CONFIG_KSU'/g "$i"
                 echo "CONFIG_KERNELSU  ---->  CONFIG_KSU"
-            fi
-        if [ "$1" ] && [ `grep -q "CONFIG_KSU" "$i"` ];then
+        fi
+        #有参数就是不补丁 更改配置注销为不使用
+        if [ "$1" ];then
             echo "# CONFIG_KSU  ->  $i"
-            sed -i s/'CONFIG_KSU'/'CONFIG_zhlhlfaaaa'/g $i
+            sed -i s/'CONFIG_KSU'/'CONFIG_zhlhlfaaaa'/g $i            
         fi
         continue
     fi
+    #没有补丁  不存在时  直接不补丁跳过
         if [ "$1" ];then
             continue
         fi
@@ -83,6 +125,17 @@ for i in "${patch_files[@]}"; do
         sed -i '/static void input_handle_event/i\#ifdef CONFIG_KSU\nextern bool ksu_input_hook __read_mostly;\nextern int ksu_handle_input_handle_event(unsigned int *type, unsigned int *code, int *value);\n#endif\n' drivers/input/input.c
         sed -i '/int disposition = input_get_disposition(dev, type, code, &value);/a\	#ifdef CONFIG_KSU\n	if (unlikely(ksu_input_hook))\n		ksu_handle_input_handle_event(&type, &code, &value);\n	#endif' drivers/input/input.c
         ;;
+        
+    fs/devpts/inode.c)
+        sed -i "/void \*devpts_get_priv(struct dentry \*dentry)/i\#ifdef CONFIG_KSU\nextern int ksu_handle_devpts(struct inode*);\n#endif" $i
+        sed -i "/if (dentry->d_sb->s_magic != DEVPTS_SUPER_MAGIC)/i\#ifdef CONFIG_KSU\n	ksu_handle_devpts(dentry->d_inode);\n#endif" $i
+        ;;    
+        
+    fs/namespace.c)
+        if ! grep -q "int path_umount(struct path \*path, int flags)" $i; then      
+            sed -i "s/int ksys_umount(char __user \*name, int flags)/$Tonamespace \nint ksys_umount(char __user *name, int flags)/g" $i
+        fi
+        ;;
     esac
-
+    
 done
