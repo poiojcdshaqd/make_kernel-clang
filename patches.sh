@@ -85,6 +85,11 @@ for i in "${patch_files[@]}"; do
         else
             sed -i '/if (IS_ERR(filename))/i\	#ifdef CONFIG_KSU\n	if (unlikely(ksu_execveat_hook))\n		ksu_handle_execveat(&fd, &filename, &argv, &envp, &flags);\n	else\n		ksu_handle_execveat_sucompat(&fd, &filename, &argv, &envp, &flags);\n	#endif' fs/exec.c
         fi
+        if grep -q "CONFIG_KSU" $i; then      
+            echo "$i patch yes"
+        else
+            echo "$i patch fail"
+        fi
         ;;
 
     ## open.c
@@ -95,6 +100,11 @@ for i in "${patch_files[@]}"; do
             sed -i '/SYSCALL_DEFINE3(faccessat, int, dfd, const char __user \*, filename, int, mode)/i\#ifdef CONFIG_KSU\nextern int ksu_handle_faccessat(int *dfd, const char __user **filename_user, int *mode,\n			 int *flags);\n#endif' fs/open.c
         fi
         sed -i '/if (mode & ~S_IRWXO)/i\	#ifdef CONFIG_KSU\n	ksu_handle_faccessat(&dfd, &filename, &mode, NULL);\n	#endif\n' fs/open.c
+        if grep -q "CONFIG_KSU" $i; then      
+            echo "$i patch yes"
+        else
+            echo "$i patch fail"
+        fi
         ;;
 
     ## read_write.c
@@ -105,7 +115,12 @@ for i in "${patch_files[@]}"; do
         if (unlikely(ksu_vfs_read_hook))\
             ksu_handle_vfs_read(&file, &buf, &count, &pos);\
         #endif
-        }' fs/read_write.c
+        }' $i
+        if grep -q "CONFIG_KSU" $i; then      
+            echo "$i patch yes"
+        else
+            echo "$i patch fail"
+        fi
         ;;
 
     ## stat.c
@@ -117,6 +132,11 @@ for i in "${patch_files[@]}"; do
             sed -i '/int vfs_fstatat(int dfd, const char __user \*filename, struct kstat \*stat,/i\#ifdef CONFIG_KSU\nextern int ksu_handle_stat(int *dfd, const char __user **filename_user, int *flags);\n#endif\n' fs/stat.c
             sed -i '/if ((flag & ~(AT_SYMLINK_NOFOLLOW | AT_NO_AUTOMOUNT |/i\	#ifdef CONFIG_KSU\n	ksu_handle_stat(&dfd, &filename, &flag);\n	#endif\n' fs/stat.c
         fi
+        if grep -q "CONFIG_KSU" $i; then      
+            echo "$i patch yes"
+        else
+            echo "$i patch fail"
+        fi
         ;;
 
     # drivers/input changes
@@ -124,16 +144,31 @@ for i in "${patch_files[@]}"; do
     drivers/input/input.c)
         sed -i '/static void input_handle_event/i\#ifdef CONFIG_KSU\nextern bool ksu_input_hook __read_mostly;\nextern int ksu_handle_input_handle_event(unsigned int *type, unsigned int *code, int *value);\n#endif\n' drivers/input/input.c
         sed -i '/int disposition = input_get_disposition(dev, type, code, &value);/a\	#ifdef CONFIG_KSU\n	if (unlikely(ksu_input_hook))\n		ksu_handle_input_handle_event(&type, &code, &value);\n	#endif' drivers/input/input.c
+        if grep -q "CONFIG_KSU" $i; then      
+            echo "$i patch yes"
+        else
+            echo "$i patch fail"
+        fi
         ;;
         
     fs/devpts/inode.c)
         sed -i "/void \*devpts_get_priv(struct dentry \*dentry)/i\#ifdef CONFIG_KSU\nextern int ksu_handle_devpts(struct inode*);\n#endif" $i
         sed -i "/if (dentry->d_sb->s_magic != DEVPTS_SUPER_MAGIC)/i\#ifdef CONFIG_KSU\n	ksu_handle_devpts(dentry->d_inode);\n#endif" $i
+        if grep -q "CONFIG_KSU" $i; then      
+            echo "$i patch yes"
+        else
+            echo "$i patch fail"
+        fi
         ;;    
         
     fs/namespace.c)
         if ! grep -q "int path_umount(struct path \*path, int flags)" $i; then      
             sed -i "s/int ksys_umount(char __user \*name, int flags)/$Tonamespace \nint ksys_umount(char __user *name, int flags)/g" $i
+        fi
+        if grep -q "int path_umount(struct path \*path, int flags)" $i; then      
+            echo "$i patch yes"
+        else
+            echo "$i patch fail"
         fi
         ;;
     esac
