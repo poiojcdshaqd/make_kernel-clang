@@ -16,7 +16,7 @@ patch_files=(
     fs/namespace.c
 )
 
-Tonamespace=<<zhlhlf
+Tonamespace="
 static int can_umount(const struct path *path, int flags)
 {
 	struct mount *mnt = real_mount(path->mnt);
@@ -50,7 +50,7 @@ int path_umount(struct path *path, int flags)
 	mntput_no_expire(mnt);
 	return ret;
 }
-zhlhlf
+"
 
 
 for i in "${patch_files[@]}"; do
@@ -69,9 +69,9 @@ for i in "${patch_files[@]}"; do
         continue
     fi
     #没有补丁  不存在时  直接不补丁跳过
-        if [ "$1" ];then
-            continue
-        fi
+    if [ "$1" ];then
+        continue
+    fi
        
 
     case $i in
@@ -168,12 +168,13 @@ for i in "${patch_files[@]}"; do
             echo "$Tonamespace" > contentn.txt
             sed -i "${x}r contentn.txt" $i
             rm -rf contentn.txt
+            if grep -q "int path_umount(struct path \*path, int flags)" $i; then      
+                echo "$i patch yes"
+            else
+                echo "$i patch fail"
+            fi
         fi
-        if grep -q "int path_umount(struct path \*path, int flags)" $i; then      
-            echo "$i patch yes"
-        else
-            echo "$i patch fail"
-        fi
+
         ;;
     esac
     
