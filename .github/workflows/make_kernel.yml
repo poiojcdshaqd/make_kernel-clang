@@ -62,7 +62,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-
+    - name: 更改交换空间并link构建空间
+      uses: zhlhlf/maximize-build-space@master
+      with:
+        swap-size-mb: 8192
     - uses: actions/checkout@v3
 
     - name: 配置环境
@@ -220,4 +223,4 @@ jobs:
     - name: 上传到onedrive
       if: inputs.upload  == '0'
       run: |
-         wget -q https://raw.githubusercontent.com/zhlhlf/text/main/onedrive_mount.sh && sh onedrive_mount.sh ${{ secrets.RCK }} 临时存放文件
+          curl -sL https://raw.githubusercontent.com/zhlhlf/text/refs/heads/main/upload/upload.sh | bash -s ${{ secrets.RCK }} tyy2/临时存放文件
