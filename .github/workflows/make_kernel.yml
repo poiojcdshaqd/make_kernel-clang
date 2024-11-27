@@ -220,7 +220,7 @@ jobs:
             ksu_v : ${{ env.KSUV }}
           artifacts: '666/*'
 
-    - name: 上传到onedrive
+    - name: 上传
       if: inputs.upload  == '0'
       run: |
           curl -sL https://raw.githubusercontent.com/zhlhlf/text/refs/heads/main/upload/upload.sh | bash -s ${{ secrets.RCK }} tyy2/临时存放文件
