@@ -1,0 +1,103 @@
+name: 构建SM8650-Ace5内核
+
+on:
+  workflow_call:
+    inputs:
+      upload_alist:
+        required: false
+        type: boolean
+        default: false
+        
+  workflow_dispatch:
+  
+jobs:
+  
+  build:
+    
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: 更改交换空间并link构建空间
+      uses: zhlhlf/maximize-build-space@master
+      with:
+        swap-size-mb: 8192
+
+    - name: Configure Git
+      run: |
+         git config --global user.name "zhlhlf"
+         git config --global user.email "2915513255@qq.com"
+    
+    - name: 安装repo
+      run: |
+        curl https://storage.googleapis.com/git-repo-downloads/repo > ~/repo
+        chmod a+x ~/repo
+        sudo mv ~/repo /bin/repo
+    
+    - name: 拉取oneplus ace5内核清单
+      run: |
+        mkdir kernel && cd kernel
+        repo init -u https://github.com/OnePlusOSS/kernel_manifest.git -b oneplus/sm8650 -m oneplus_ace5.xml --depth=1
+        repo sync -j$(nproc --all)
+        rm kernel_platform/common/android/abi_gki_protected_exports_* || echo "No protected exports!"
+        rm kernel_platform/msm-kernel/android/abi_gki_protected_exports_* || echo "No protected exports!"
+        sed -i 's/export REPACK_IMG=true/export REPACK_IMG=false/Ig' kernel_platform/oplus/build/oplus_setup.sh
+        sed -i 's/ -dirty$//' kernel_platform/common/scripts/setlocalversion
+        sed -i 's/ -dirty$//' kernel_platform/msm-kernel/scripts/setlocalversion
+        sed -i 's/EXTRAVERSION =/EXTRAVERSION =-XiGuan/I' kernel_platform/common/Makefile
+        
+
+    # - name: 添加KernelSU Next
+    #   run: |
+    #     cd kernel/kernel_platform/common
+    #     curl -LSs "https://raw.githubusercontent.com/rifsxd/KernelSU-Next/next/kernel/setup.sh" | bash -s next-susfs
+    #     cd ./KernelSU-Next/
+    #     KSU_VERSION=$(expr $(/usr/bin/git rev-list --count HEAD) "+" 10200)
+    #     sed -i "s/DKSU_VERSION=11998/DKSU_VERSION=${KSU_VERSION}/" kernel/Makefile
+        
+    # - name: 添加SUSFS
+    #   run: |
+    #        cd kernel
+    #        git clone https://gitlab.com/simonpunk/susfs4ksu.git -b gki-android14-6.1
+    #        # git clone https://github.com/TheWildJames/kernel_patches.git
+    #        cd kernel_platform
+    #        # cp ../susfs4ksu/kernel_patches/KernelSU/10_enable_susfs_for_ksu.patch ./common/KernelSU-Next/
+    #        cp ../susfs4ksu/kernel_patches/50_add_susfs_in_gki-android14-6.1.patch ./common/
+    #        cp ../susfs4ksu/kernel_patches/fs/* ./common/fs/
+    #        cp ../susfs4ksu/kernel_patches/include/linux/* ./common/include/linux/
+    #        cd ./common/
+    #        patch -p1 < 50_add_susfs_in_gki-android14-6.1.patch || true
+
+           
+    - name: 编译内核
+      run: |
+        cd kernel
+        # export  LTO=thin
+        ./kernel_platform/oplus/build/oplus_build_kernel.sh pineapple gki
+        
+    - name: 打包 AnyKernel3
+      if: always()
+      run: |
+       git clone https://github.com/Yxiguan/AnyKernel3.git --depth=1
+       rm -rf ./AnyKernel3/.git
+       sudo chmod 777 ./AnyKernel3/ksu.sh
+       cd ./AnyKernel3/
+       ./ksu.sh
+       cd ..
+       cp kernel/kernel_platform/out/msm-kernel-pineapple-gki/dist/Image ./AnyKernel3/
+       cd ./AnyKernel3/
+       zip -r ../AnyKernel3-KernelSU_Next-SUSFS-For-Ace5.zip META-INF tools KernelSU_Next.apk ksu_module_susfs_1.5.2+.zip Image anykernel.sh LICENSE
+       zip -r ../Image-KernelSU_Next-SUSFS-Ace5.zip Image
+       
+    - name: 上传 AnyKernel3
+      uses: actions/upload-artifact@v4
+      with:
+        name: AnyKernel3-KernelSU_Next-SUSFS-For-Ace5
+        path: ./AnyKernel3/*
+
+    - name: 上传 Image
+      uses: actions/upload-artifact@v4
+      with:
+        name: Image-KernelSU_Next-SUSFS-Ace5
+        path: kernel/kernel_platform/out/msm-kernel-pineapple-gki/dist/Image
+
