@@ -47,26 +47,26 @@ jobs:
         sed -i 's/EXTRAVERSION =/EXTRAVERSION =-XiGuan/I' kernel_platform/common/Makefile
         
 
-    # - name: 添加KernelSU Next
-    #   run: |
-    #     cd kernel/kernel_platform/common
-    #     curl -LSs "https://raw.githubusercontent.com/rifsxd/KernelSU-Next/next/kernel/setup.sh" | bash -s next-susfs
-    #     cd ./KernelSU-Next/
-    #     KSU_VERSION=$(expr $(/usr/bin/git rev-list --count HEAD) "+" 10200)
-    #     sed -i "s/DKSU_VERSION=11998/DKSU_VERSION=${KSU_VERSION}/" kernel/Makefile
+    - name: 添加KernelSU Next
+      run: |
+        cd kernel/kernel_platform/common
+        curl -LSs "https://raw.githubusercontent.com/rifsxd/KernelSU-Next/next/kernel/setup.sh" | bash -s next-susfs
+        cd ./KernelSU-Next/
+        KSU_VERSION=$(expr $(/usr/bin/git rev-list --count HEAD) "+" 10200)
+        sed -i "s/DKSU_VERSION=11998/DKSU_VERSION=${KSU_VERSION}/" kernel/Makefile
         
-    # - name: 添加SUSFS
-    #   run: |
-    #        cd kernel
-    #        git clone https://gitlab.com/simonpunk/susfs4ksu.git -b gki-android14-6.1
-    #        # git clone https://github.com/TheWildJames/kernel_patches.git
-    #        cd kernel_platform
-    #        # cp ../susfs4ksu/kernel_patches/KernelSU/10_enable_susfs_for_ksu.patch ./common/KernelSU-Next/
-    #        cp ../susfs4ksu/kernel_patches/50_add_susfs_in_gki-android14-6.1.patch ./common/
-    #        cp ../susfs4ksu/kernel_patches/fs/* ./common/fs/
-    #        cp ../susfs4ksu/kernel_patches/include/linux/* ./common/include/linux/
-    #        cd ./common/
-    #        patch -p1 < 50_add_susfs_in_gki-android14-6.1.patch || true
+    - name: 添加SUSFS
+      run: |
+           cd kernel
+           git clone https://gitlab.com/simonpunk/susfs4ksu.git -b gki-android14-6.1
+           # git clone https://github.com/TheWildJames/kernel_patches.git
+           cd kernel_platform
+           # cp ../susfs4ksu/kernel_patches/KernelSU/10_enable_susfs_for_ksu.patch ./common/KernelSU-Next/
+           cp ../susfs4ksu/kernel_patches/50_add_susfs_in_gki-android14-6.1.patch ./common/
+           cp ../susfs4ksu/kernel_patches/fs/* ./common/fs/
+           cp ../susfs4ksu/kernel_patches/include/linux/* ./common/include/linux/
+           cd ./common/
+           patch -p1 < 50_add_susfs_in_gki-android14-6.1.patch || true
 
            
     - name: 编译内核
